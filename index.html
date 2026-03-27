@@ -460,7 +460,7 @@ select option { background: var(--surface2); }
         </div>
         <div class="field">
           <label>Rev Share (%)</label>
-          <input type="number" id="dl_share" value="0.5" step="0.1" oninput="recalc()"/>
+          <input type="number" id="dl_share" value="0.05" step="0.1" oninput="recalc()"/>
         </div>
         <div class="field">
           <label>Loans / Batch</label>
@@ -473,9 +473,9 @@ select option { background: var(--surface2); }
         <div class="field">
           <label>Approval Rate (%)</label>
           <div class="range-wrap">
-            <input type="range" id="dl_approval" min="10" max="60" value="27"
+            <input type="range" id="dl_approval" min="10" max="60" value="25"
               oninput="document.getElementById('dl_approvalVal').textContent=this.value+'%'; recalc()">
-            <span class="rval" id="dl_approvalVal">27%</span>
+            <span class="rval" id="dl_approvalVal">25%</span>
           </div>
         </div>
       </div>
@@ -503,11 +503,11 @@ select option { background: var(--surface2); }
         </div>
         <div class="field">
           <label>Avg Txn Value ($)</label>
-          <input type="number" id="pc_avg" value="500" oninput="recalc()"/>
+          <input type="number" id="pc_avg" value="10000" oninput="recalc()"/>
         </div>
         <div class="field">
           <label>Txns / Mo (Yr 1)</label>
-          <input type="number" id="pc_txns" value="100" oninput="recalc()"/>
+          <input type="number" id="pc_txns" value="10" oninput="recalc()"/>
         </div>
       </div>
     </div>
