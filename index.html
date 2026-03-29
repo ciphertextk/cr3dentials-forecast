@@ -2,993 +2,616 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Cr3dentials — Revenue Forecast</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg:       #0a0c10;
-  --surface:  #11141b;
-  --surface2: #181c25;
-  --border:   #232837;
-  --accent:   #00e5a0;
-  --blue:     #0077ff;
-  --orange:   #ff6b35;
-  --purple:   #b06bff;
-  --text:     #e8ecf0;
-  --muted:    #6b7694;
-  --mono:     'Space Mono', monospace;
-  --sans:     'DM Sans', sans-serif;
-  --r:        10px;
+  --bg:     #0a0c10;
+  --surf:   #11141b;
+  --surf2:  #181c25;
+  --border: #232837;
+  --accent: #00e5a0;
+  --blue:   #0077ff;
+  --orange: #ff6b35;
+  --purple: #b06bff;
+  --text:   #e8ecf0;
+  --muted:  #6b7694;
+  --mono:   'Space Mono', monospace;
+  --sans:   'DM Sans', sans-serif;
+  --r:      10px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
 
-/* ── HEADER ───────────────────────────────────── */
-.header {
-  height: 60px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+/* ── SHARED ─────────────────────────────────────── */
+.badge { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; }
+.b-green  { background: rgba(0,229,160,.12); color: var(--accent); }
+.b-blue   { background: rgba(0,119,255,.12);  color: var(--blue); }
+.b-orange { background: rgba(255,107,53,.12); color: var(--orange); }
+.tog { width: 36px; height: 20px; background: var(--border); border-radius: 10px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+.tog.on { background: var(--accent); }
+.tog::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: left .2s; }
+.tog.on::after { left: 19px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fields.one { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-family: var(--mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select { width: 100%; height: 34px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0 10px; color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color .2s; }
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field input[type=range] { height: 20px; padding: 0; background: none; border: none; accent-color: var(--accent); cursor: pointer; }
+.rw { display: flex; align-items: center; gap: 8px; }
+.rw input[type=range] { flex: 1; }
+.rval { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 36px; text-align: right; }
+.formula { background: var(--surf2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 9px 12px; font-family: var(--mono); font-size: 9px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+.formula strong { color: var(--accent); }
+.pcard { background: var(--surf2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
+.pcard.off { opacity: .4; pointer-events: none; }
+.pcard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pcard-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.pills { display: flex; gap: 6px; }
+.pill { flex: 1; padding: 7px 0; background: var(--surf2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; text-align: center; transition: all .15s; }
+.pill.active { background: rgba(0,229,160,.1); border-color: var(--accent); color: var(--accent); }
+.sec-label { font-family: var(--mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: 20px 0 10px; }
+.sec-label:first-child { margin-top: 0; }
+canvas { display: block; }
+select option { background: var(--surf2); }
+.add-btn { width: 100%; padding: 9px; margin-top: 4px; background: transparent; border: 1px dashed var(--border); border-radius: var(--r); color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all .2s; }
+.add-btn:hover { border-color: var(--accent); color: var(--accent); }
+.del-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 2px 6px; border-radius: 4px; }
+.del-btn:hover { color: var(--orange); }
+
+/* ════════════════════════════════════════
+   DESKTOP  ≥ 768px
+════════════════════════════════════════ */
+.dsk-header { height: 60px; background: var(--surf); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 20; }
 .logo { font-family: var(--mono); font-size: 16px; color: var(--accent); letter-spacing: .05em; }
-.logo em { color: var(--muted); font-style: normal; font-size: 11px; margin-left: 14px; letter-spacing: .1em; }
-.header-right { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-
-/* ── LAYOUT ───────────────────────────────────── */
-.layout { display: flex; height: calc(100vh - 60px); }
-
-/* ── SIDEBAR ──────────────────────────────────── */
-.sidebar {
-  width: 320px;
-  flex-shrink: 0;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 24px 18px 40px;
-}
+.logo em { color: var(--muted); font-style: normal; font-size: 11px; margin-left: 14px; }
+.hdr-r { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.dsk-layout { display: flex; height: calc(100vh - 60px); }
+.sidebar { width: 320px; flex-shrink: 0; background: var(--surf); border-right: 1px solid var(--border); overflow-y: auto; padding: 22px 16px 40px; }
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-.sec-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 24px 0 12px;
-}
-.sec-label:first-child { margin-top: 0; }
-
-/* scenario pills */
-.pills { display: flex; gap: 6px; margin-bottom: 20px; }
-.pill {
-  flex: 1; padding: 7px 0;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  text-align: center;
-  transition: all .15s;
-}
-.pill.active { background: rgba(0,229,160,.1); border-color: var(--accent); color: var(--accent); }
-
-/* partner card */
-.pcard {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-bottom: 12px;
-}
-.pcard.off { opacity: .4; pointer-events: none; }
-.pcard-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.pcard-name {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.badge {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 20px;
-}
-.b-green  { background: rgba(0,229,160,.12); color: var(--accent); }
-.b-blue   { background: rgba(0,119,255,.12);  color: var(--blue);   }
-.b-orange { background: rgba(255,107,53,.12); color: var(--orange); }
-
-/* toggle */
-.tog {
-  width: 36px; height: 20px;
-  background: var(--border);
-  border-radius: 10px;
-  position: relative;
-  cursor: pointer;
-  transition: background .2s;
-  flex-shrink: 0;
-}
-.tog.on { background: var(--accent); }
-.tog::after {
-  content: '';
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left .2s;
-}
-.tog.on::after { left: 19px; }
-
-/* fields — ALL use same grid so labels and inputs align */
-.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.fields.single { grid-template-columns: 1fr; }
-
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.field input, .field select {
-  width: 100%;
-  height: 34px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0 10px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
-  outline: none;
-  transition: border-color .2s;
-}
-.field input:focus, .field select:focus { border-color: var(--accent); }
-.field input[type=range] {
-  height: 20px;
-  padding: 0;
-  background: none;
-  border: none;
-  accent-color: var(--accent);
-  cursor: pointer;
-  margin-top: 7px;
-}
-.rval {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent);
-  text-align: right;
-  margin-top: 7px;
-  min-width: 34px;
-}
-.range-wrap { display: flex; align-items: center; gap: 8px; }
-.range-wrap input[type=range] { flex: 1; margin-top: 0; }
-
-/* add partner btn */
-.add-btn {
-  width: 100%;
-  padding: 9px;
-  margin-top: 4px;
-  background: transparent;
-  border: 1px dashed var(--border);
-  border-radius: var(--r);
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all .2s;
-}
-.add-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-/* ── MAIN ─────────────────────────────────────── */
-.main { flex: 1; overflow-y: auto; padding: 28px 32px 48px; }
-.main::-webkit-scrollbar { width: 4px; }
-.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* KPI row */
+.d-main { flex: 1; overflow-y: auto; padding: 28px 32px 48px; }
+.d-main::-webkit-scrollbar { width: 4px; }
+.d-main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* kpis */
 .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-.kpi {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-}
-.kpi::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent);
-}
-.kpi.k-blue::before   { background: var(--blue); }
-.kpi.k-orange::before { background: var(--orange); }
-.kpi.k-purple::before { background: var(--purple); }
+.kpi { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; position: relative; overflow: hidden; }
+.kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); }
+.kpi.kb::before { background: var(--blue); } .kpi.ko::before { background: var(--orange); } .kpi.kp::before { background: var(--purple); }
 .kpi-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 .kpi-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
 .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
-
 /* chart */
-.chart-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 20px 22px;
-  margin-bottom: 20px;
-}
-.chart-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.chart-head-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.chart-box { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-bottom: 20px; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.chart-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .ytabs { display: flex; gap: 5px; }
-.ytab {
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 10px;
-  cursor: pointer;
-  transition: all .15s;
-}
+.ytab { padding: 4px 10px; border-radius: 4px; background: var(--surf2); border: 1px solid var(--border); color: var(--muted); font-family: var(--mono); font-size: 10px; cursor: pointer; transition: all .15s; }
 .ytab.active { background: rgba(0,229,160,.1); border-color: var(--accent); color: var(--accent); }
-canvas { display: block; width: 100% !important; }
-
-/* breakdown table */
-.tbox {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-.tbox-head {
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+/* table */
+.tbox { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 20px; }
+.tbox-head { padding: 13px 18px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 table { width: 100%; border-collapse: collapse; }
-th {
-  background: var(--surface2);
-  padding: 9px 16px;
-  text-align: left;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border);
-  font-weight: 400;
-}
-td {
-  padding: 11px 16px;
-  font-family: var(--mono);
-  font-size: 12px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
+th { background: var(--surf2); padding: 9px 16px; text-align: left; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400; }
+td { padding: 11px 16px; font-family: var(--mono); font-size: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(255,255,255,.02); }
-.t-name { font-weight: 700; color: var(--text); }
-.t-green  { color: var(--accent); }
-.t-blue   { color: var(--blue); }
-.t-orange { color: var(--orange); }
-.t-muted  { color: var(--muted); }
-.t-note   { color: var(--muted); font-size: 10px; }
-
+.tn { font-weight: 700; color: var(--text); } .tg { color: var(--accent); } .tb2 { color: var(--blue); } .to2 { color: var(--orange); } .tm { color: var(--muted); } .tnote { color: var(--muted); font-size: 10px; }
 /* year grid */
 .ygrid { display: grid; gap: 10px; margin-bottom: 20px; }
-.ycol { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
-.ycol-head { background: var(--surface2); padding: 9px 14px; font-family: var(--mono); font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--border); }
-.ycol-body { padding: 14px; }
-.ycol-total { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+.ycol { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.ycol-h { background: var(--surf2); padding: 9px 14px; font-family: var(--mono); font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.ycol-b { padding: 14px; }
+.ycol-t { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
 .yrow { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 5px; }
 .yrow span:last-child { color: var(--text); }
+.wm { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--border); padding: 24px 0 0; }
 
-/* formula note */
-.formula {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 6px;
-  padding: 10px 14px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 14px;
-}
-.formula strong { color: var(--accent); }
+/* ════════════════════════════════════════
+   MOBILE  < 768px  —  weather / coingecko
+════════════════════════════════════════ */
+.mob { display: none; flex-direction: column; min-height: 100vh; padding-bottom: 32px; }
+/* mobile header */
+.m-hdr { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--border); }
+.m-logo { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: .05em; }
+.m-gear { width: 36px; height: 36px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.m-gear svg { width: 18px; height: 18px; stroke: var(--muted); fill: none; stroke-width: 2; }
+/* scenario row */
+.m-scenario { padding: 14px 20px 0; }
+/* hero — big number like iPhone weather temp */
+.m-hero { padding: 30px 20px 22px; text-align: center; }
+.m-hero-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.m-hero-num { font-family: var(--mono); font-size: 54px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -.02em; }
+.m-hero-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 8px; }
+.m-hero-sub b { color: var(--accent); font-weight: 400; }
+/* partner cards strip — CoinGecko horizontal scroll */
+.m-strip-lbl { padding: 0 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.m-strip { display: flex; gap: 12px; padding: 0 20px 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.m-strip::-webkit-scrollbar { display: none; }
+.m-pcard { flex-shrink: 0; width: 156px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; padding: 16px 14px; }
+.m-pcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.m-pcard-name { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--text); }
+.m-pcard-mo { font-family: var(--mono); font-size: 22px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+.m-pcard-sub { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+.m-pcard-yr { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.m-pcard-yr span:last-child { color: var(--text); }
+/* chart */
+.m-chart-wrap { padding: 18px 20px 0; }
+.m-chart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.m-chart-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+/* forecast strip — like weather 7-day row */
+.m-fc-lbl { padding: 20px 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.m-fc-strip { margin: 0 20px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.m-fc-row { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--border); gap: 12px; }
+.m-fc-row:last-child { border-bottom: none; }
+.m-fc-yr { font-family: var(--mono); font-size: 11px; color: var(--muted); min-width: 72px; }
+.m-fc-bar-bg { flex: 1; height: 4px; background: var(--surf2); border-radius: 2px; overflow: hidden; }
+.m-fc-bar { height: 100%; border-radius: 2px; background: var(--accent); transition: width .4s ease; }
+.m-fc-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--text); min-width: 70px; text-align: right; }
+/* mobile kpi 2x2 grid */
+.m-kpi-lbl { padding: 20px 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.m-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
+.m-kpi { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: relative; overflow: hidden; }
+.m-kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); }
+.m-kpi.kb::before { background: var(--blue); } .m-kpi.ko::before { background: var(--orange); } .m-kpi.kp::before { background: var(--purple); }
+.m-kpi-l { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.m-kpi-v { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--text); line-height: 1; }
+.m-kpi-s { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+/* settings drawer */
+.drawer-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 40; }
+.drawer-bg.open { display: block; }
+.drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surf); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; z-index: 50; max-height: 86vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s ease; }
+.drawer.open { transform: translateY(0); }
+.drawer-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 14px auto 18px; }
+.drawer-inner { padding: 0 18px 48px; }
 
 /* modal */
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; align-items: center; justify-content: center; z-index: 60; }
 .overlay.open { display: flex; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 26px;
-  width: 420px;
-  max-width: 95vw;
-}
-.modal h3 { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-bottom: 18px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+.modal { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 420px; max-width: 95vw; max-height: 88vh; overflow-y: auto; }
+.modal h3 { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 .btn { padding: 8px 18px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; border: none; transition: all .15s; }
 .btn-p { background: var(--accent); color: var(--bg); font-weight: 700; }
-.btn-p:hover { background: #00c98a; }
 .btn-g { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-.btn-g:hover { border-color: var(--muted); color: var(--text); }
 
-.del-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 2px 6px; border-radius: 4px; transition: color .15s; }
-.del-btn:hover { color: var(--orange); }
-
-select option { background: var(--surface2); }
-.wm { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--border); padding: 24px 0 0; }
+/* ── RESPONSIVE SWITCH ── */
+@media (max-width: 767px) {
+  .dsk-header, .dsk-layout { display: none !important; }
+  .mob { display: flex !important; }
+}
+@media (min-width: 768px) {
+  .mob { display: none !important; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
+<!-- ══════════ DESKTOP ══════════ -->
+<div class="dsk-header">
   <div class="logo">CR3DENTIALS <em>REVENUE FORECAST ENGINE v2.0</em></div>
-  <div class="header-right">Income Verification Platform · Internal Use Only</div>
+  <div class="hdr-r">Income Verification Platform · Internal Use Only</div>
 </div>
-
-<div class="layout">
-
-  <!-- ── SIDEBAR ── -->
+<div class="dsk-layout">
   <aside class="sidebar">
-
     <div class="sec-label">Scenario</div>
-    <div class="pills">
+    <div class="pills" style="margin-bottom:18px">
       <div class="pill active" onclick="setScenario('base',this)">Base</div>
       <div class="pill" onclick="setScenario('bull',this)">Bull</div>
       <div class="pill" onclick="setScenario('bear',this)">Bear</div>
     </div>
-
     <div class="sec-label">Global Settings</div>
-    <div class="fields single" style="margin-bottom:10px">
-      <div class="field">
-        <label>Annual Growth Rate</label>
-        <div class="range-wrap">
-          <input type="range" id="growthRate" min="0" max="200" value="40"
-            oninput="document.getElementById('growthVal').textContent=this.value+'%'; recalc()">
-          <span class="rval" id="growthVal">40%</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>Forecast Horizon</label>
-        <select id="horizon" onchange="recalc()">
-          <option value="1">1 Year</option>
-          <option value="2">2 Years</option>
-          <option value="3" selected>3 Years</option>
-          <option value="5">5 Years</option>
-        </select>
-      </div>
+    <div class="fields one" style="margin-bottom:10px">
+      <div class="field"><label>Annual Growth Rate</label><div class="rw"><input type="range" id="growthRate" min="0" max="200" value="40" oninput="syncGrowth(this.value);recalc()"><span class="rval" id="growthVal">40%</span></div></div>
+      <div class="field"><label>Forecast Horizon</label><select id="horizon" onchange="syncHorizon(this.value);recalc()"><option value="1">1 Year</option><option value="2">2 Years</option><option value="3" selected>3 Years</option><option value="5">5 Years</option></select></div>
     </div>
-
-    <!-- KASI MONEY -->
     <div class="sec-label">Partner · Kasi Money</div>
     <div class="pcard" id="card-kasi">
-      <div class="pcard-head">
-        <div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div>
-        <div class="tog on" id="tog-kasi" onclick="toggleP('kasi')"></div>
-      </div>
-      <div class="formula">
-        Revenue = MAX(verifs × price, MIN_FEE)<br>
-        Breakeven at <strong id="kasi-be">—</strong> verifs/mo
-      </div>
+      <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="tog-kasi" onclick="toggleP('kasi')"></div></div>
+      <div class="formula">Revenue = MAX(verifs × price, MIN_FEE)<br>Breakeven at <strong id="kasi-be">—</strong> verifs/mo</div>
       <div class="fields">
-        <div class="field">
-          <label>Monthly Min Fee ($)</label>
-          <input type="number" id="kasi_fee" value="600" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Price / Verif ($)</label>
-          <input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Min Cap (verifs)</label>
-          <input type="number" id="kasi_cap" value="250" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Avg Verifs / Mo (Yr 1)</label>
-          <input type="number" id="kasi_verifs" value="400" oninput="recalc()"/>
-        </div>
+        <div class="field"><label>Monthly Min Fee ($)</label><input type="number" id="kasi_fee" value="600" oninput="recalc()"/></div>
+        <div class="field"><label>Price / Verif ($)</label><input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/></div>
+        <div class="field"><label>Min Cap (verifs)</label><input type="number" id="kasi_cap" value="250" oninput="recalc()"/></div>
+        <div class="field"><label>Avg Verifs / Mo (Yr 1)</label><input type="number" id="kasi_verifs" value="400" oninput="recalc()"/></div>
       </div>
     </div>
-
-    <!-- DROPLINKED -->
     <div class="sec-label">Partner · Droplinked</div>
     <div class="pcard" id="card-droplinked">
-      <div class="pcard-head">
-        <div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div>
-        <div class="tog on" id="tog-droplinked" onclick="toggleP('droplinked')"></div>
-      </div>
-      <div class="formula">
-        Revenue = batches × loans × approval% × avg_loan × share%
-      </div>
+      <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="tog-droplinked" onclick="toggleP('droplinked')"></div></div>
+      <div class="formula">Revenue = batches × loans × approval% × avg_loan × share%</div>
       <div class="fields">
-        <div class="field">
-          <label>Min Loan Size ($)</label>
-          <input type="number" id="dl_minLoan" value="50000" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Max Loan Size ($)</label>
-          <input type="number" id="dl_maxLoan" value="2000000" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Avg Loan Size ($)</label>
-          <input type="number" id="dl_avgLoan" value="150000" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Rev Share (%)</label>
-          <input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Loans / Batch</label>
-          <input type="number" id="dl_lpb" value="1000" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Batches / Mo (Yr 1)</label>
-          <input type="number" id="dl_batches" value="1" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Approval Rate (%)</label>
-          <div class="range-wrap">
-            <input type="range" id="dl_approval" min="10" max="60" value="25"
-              oninput="document.getElementById('dl_approvalVal').textContent=this.value+'%'; recalc()">
-            <span class="rval" id="dl_approvalVal">25%</span>
-          </div>
-        </div>
+        <div class="field"><label>Min Loan Size ($)</label><input type="number" id="dl_minLoan" value="50000" oninput="recalc()"/></div>
+        <div class="field"><label>Max Loan Size ($)</label><input type="number" id="dl_maxLoan" value="2000000" oninput="recalc()"/></div>
+        <div class="field"><label>Avg Loan Size ($)</label><input type="number" id="dl_avgLoan" value="150000" oninput="recalc()"/></div>
+        <div class="field"><label>Rev Share (%)</label><input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()"/></div>
+        <div class="field"><label>Loans / Batch</label><input type="number" id="dl_lpb" value="1000" oninput="recalc()"/></div>
+        <div class="field"><label>Batches / Mo (Yr 1)</label><input type="number" id="dl_batches" value="1" oninput="recalc()"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="dl_approvalVal">25%</span></div></div>
       </div>
     </div>
-
-    <!-- PAYCREST -->
     <div class="sec-label">Partner · Paycrest</div>
     <div class="pcard" id="card-paycrest">
-      <div class="pcard-head">
-        <div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div>
-        <div class="tog on" id="tog-paycrest" onclick="toggleP('paycrest')"></div>
-      </div>
-      <div class="formula">
-        Revenue = txns × MIN(avg_txn × share%, MAX_PER_TXN)<br>
-        Cap kicks in above <strong id="pc-cap-note">—</strong> avg txn value
-      </div>
+      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="tog-paycrest" onclick="toggleP('paycrest')"></div></div>
+      <div class="formula">Revenue = txns × MIN(avg_txn × share%, MAX_PER_TXN)<br>Cap kicks in above <strong id="pc-cap-note">—</strong></div>
       <div class="fields">
-        <div class="field">
-          <label>Rev Share (%)</label>
-          <input type="number" id="pc_share" value="7" step="0.5" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Max Earn / Txn ($)</label>
-          <input type="number" id="pc_max" value="200" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Avg Txn Value ($)</label>
-          <input type="number" id="pc_avg" value="10000" oninput="recalc()"/>
-        </div>
-        <div class="field">
-          <label>Txns / Mo (Yr 1)</label>
-          <input type="number" id="pc_txns" value="10" oninput="recalc()"/>
-        </div>
+        <div class="field"><label>Rev Share (%)</label><input type="number" id="pc_share" value="7" step="0.5" oninput="recalc()"/></div>
+        <div class="field"><label>Max Earn / Txn ($)</label><input type="number" id="pc_max" value="200" oninput="recalc()"/></div>
+        <div class="field"><label>Avg Txn Value ($)</label><input type="number" id="pc_avg" value="10000" oninput="recalc()"/></div>
+        <div class="field"><label>Txns / Mo (Yr 1)</label><input type="number" id="pc_txns" value="10" oninput="recalc()"/></div>
       </div>
     </div>
-
-    <!-- CUSTOM PARTNERS -->
     <div class="sec-label">Custom Partners</div>
     <div id="custom-list"></div>
     <button class="add-btn" onclick="openModal()">+ Add New Partner</button>
-
   </aside>
 
-  <!-- ── MAIN ── -->
-  <main class="main">
-
+  <main class="d-main">
     <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-lbl">Year 1 Revenue</div>
-        <div class="kpi-val" id="kpi-yr1">—</div>
-        <div class="kpi-sub">Sum of all active partners</div>
-      </div>
-      <div class="kpi k-blue">
-        <div class="kpi-lbl">Total Forecast</div>
-        <div class="kpi-val" id="kpi-total">—</div>
-        <div class="kpi-sub" id="kpi-total-sub">Over 3 years</div>
-      </div>
-      <div class="kpi k-orange">
-        <div class="kpi-lbl">Peak Annual Rev</div>
-        <div class="kpi-val" id="kpi-peak">—</div>
-        <div class="kpi-sub" id="kpi-peak-yr">Year —</div>
-      </div>
-      <div class="kpi k-purple">
-        <div class="kpi-lbl">Active Partners</div>
-        <div class="kpi-val" id="kpi-count">—</div>
-        <div class="kpi-sub">Contributing revenue</div>
-      </div>
+      <div class="kpi"><div class="kpi-lbl">Year 1 Revenue</div><div class="kpi-val" id="kpi-yr1">—</div><div class="kpi-sub">All active partners</div></div>
+      <div class="kpi kb"><div class="kpi-lbl">Total Forecast</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub" id="kpi-total-sub">Over 3 years</div></div>
+      <div class="kpi ko"><div class="kpi-lbl">Peak Annual Rev</div><div class="kpi-val" id="kpi-peak">—</div><div class="kpi-sub" id="kpi-peak-yr">Year —</div></div>
+      <div class="kpi kp"><div class="kpi-lbl">Active Partners</div><div class="kpi-val" id="kpi-count">—</div><div class="kpi-sub">Contributing revenue</div></div>
     </div>
-
     <div class="chart-box">
-      <div class="chart-head">
-        <div class="chart-head-lbl">Monthly Revenue Projection</div>
-        <div class="ytabs" id="ytabs"></div>
-      </div>
-      <canvas id="chart" height="220"></canvas>
+      <div class="chart-head"><div class="chart-lbl">Monthly Revenue Projection</div><div class="ytabs" id="d-ytabs"></div></div>
+      <canvas id="d-chart" height="220"></canvas>
     </div>
-
     <div class="tbox">
       <div class="tbox-head">Partner Breakdown — Year 1</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Partner</th>
-            <th>Model</th>
-            <th>Mo. Revenue</th>
-            <th>Yr 1 Total</th>
-            <th>Formula Note</th>
-            <th>At Floor?</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+      <table><thead><tr><th>Partner</th><th>Model</th><th>Mo. Revenue</th><th>Yr 1 Total</th><th>Formula Note</th><th>Status</th></tr></thead>
+      <tbody id="d-tbody"></tbody></table>
     </div>
-
-    <div class="ygrid" id="ygrid"></div>
-
+    <div class="ygrid" id="d-ygrid"></div>
     <div class="wm">CR3DENTIALS · CONFIDENTIAL · INTERNAL USE ONLY</div>
   </main>
 </div>
 
-<!-- ADD PARTNER MODAL -->
-<div class="overlay" id="modal">
-  <div class="modal">
-    <h3>+ Add Custom Partner</h3>
-    <div class="fields single">
-      <div class="field"><label>Partner Name</label><input type="text" id="cp_name" placeholder="e.g. Stripe"/></div>
-      <div class="field">
-        <label>Revenue Model</label>
-        <select id="cp_type" onchange="renderCPFields()">
-          <option value="flat_verif">Flat fee + per verification</option>
-          <option value="loan_share">Loan approval share (%)</option>
-          <option value="txn_share">Transaction revenue share (%)</option>
-          <option value="fixed">Fixed monthly fee</option>
-        </select>
+<!-- ══════════ MOBILE ══════════ -->
+<div class="mob">
+  <div class="m-hdr">
+    <div class="m-logo">CR3DENTIALS</div>
+    <div class="m-gear" onclick="openDrawer()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </div>
+
+  <div class="m-scenario"><div class="pills"><div class="pill active" onclick="setScenario('base',this)">Base</div><div class="pill" onclick="setScenario('bull',this)">Bull</div><div class="pill" onclick="setScenario('bear',this)">Bear</div></div></div>
+
+  <div class="m-hero">
+    <div class="m-hero-lbl">Year 1 Revenue</div>
+    <div class="m-hero-num" id="m-yr1">—</div>
+    <div class="m-hero-sub">Forecast total: <b id="m-total">—</b> &nbsp;·&nbsp; Peak yr: <b id="m-peak">—</b></div>
+  </div>
+
+  <div class="m-strip-lbl">Partner Revenue / Month</div>
+  <div class="m-strip" id="m-cards"></div>
+
+  <div class="m-chart-wrap">
+    <div class="m-chart-head"><div class="m-chart-lbl">Monthly Projection</div><div class="ytabs" id="m-ytabs"></div></div>
+    <canvas id="m-chart" height="180"></canvas>
+  </div>
+
+  <div class="m-fc-lbl">Year-by-Year Forecast</div>
+  <div class="m-fc-strip" id="m-fc"></div>
+
+  <div class="m-kpi-lbl">Summary</div>
+  <div class="m-kpis">
+    <div class="m-kpi"><div class="m-kpi-l">Year 1</div><div class="m-kpi-v" id="mk-yr1">—</div><div class="m-kpi-s">Annual revenue</div></div>
+    <div class="m-kpi kb"><div class="m-kpi-l">Cumulative</div><div class="m-kpi-v" id="mk-total">—</div><div class="m-kpi-s" id="mk-tsub">Total</div></div>
+    <div class="m-kpi ko"><div class="m-kpi-l">Peak Year</div><div class="m-kpi-v" id="mk-peak">—</div><div class="m-kpi-s" id="mk-pyr">—</div></div>
+    <div class="m-kpi kp"><div class="m-kpi-l">Partners</div><div class="m-kpi-v" id="mk-count">—</div><div class="m-kpi-s">Active</div></div>
+  </div>
+  <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--border);padding:24px 0 0">CR3DENTIALS · CONFIDENTIAL</div>
+</div>
+
+<!-- settings drawer (mobile) -->
+<div class="drawer-bg" id="dbg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-inner">
+    <div class="sec-label" style="margin-top:0">Global Settings</div>
+    <div class="fields one" style="margin-bottom:14px">
+      <div class="field"><label>Annual Growth Rate</label><div class="rw"><input type="range" id="m-growthRate" min="0" max="200" value="40" oninput="syncGrowth(this.value);recalc()"><span class="rval" id="m-growthVal">40%</span></div></div>
+      <div class="field"><label>Forecast Horizon</label><select id="m-horizon" onchange="syncHorizon(this.value);recalc()"><option value="1">1 Year</option><option value="2">2 Years</option><option value="3" selected>3 Years</option><option value="5">5 Years</option></select></div>
+    </div>
+    <div class="sec-label">Kasi Money</div>
+    <div class="pcard">
+      <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="m-tog-kasi" onclick="toggleP('kasi')"></div></div>
+      <div class="fields">
+        <div class="field"><label>Min Fee ($)</label><input type="number" id="m-kasi_fee" value="600" oninput="mirrorKasi('fee',this.value);recalc()"/></div>
+        <div class="field"><label>Price/Verif ($)</label><input type="number" id="m-kasi_price" value="0.50" step="0.01" oninput="mirrorKasi('price',this.value);recalc()"/></div>
+        <div class="field"><label>Min Cap</label><input type="number" id="m-kasi_cap" value="250" oninput="mirrorKasi('cap',this.value);recalc()"/></div>
+        <div class="field"><label>Verifs/Mo Yr1</label><input type="number" id="m-kasi_verifs" value="400" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
       </div>
     </div>
-    <div id="cp_fields" style="margin-top:12px"></div>
-    <div class="modal-actions">
-      <button class="btn btn-p" onclick="addCustom()">Add Partner</button>
-      <button class="btn btn-g" onclick="closeModal()">Cancel</button>
+    <div class="sec-label">Droplinked</div>
+    <div class="pcard">
+      <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="m-tog-droplinked" onclick="toggleP('droplinked')"></div></div>
+      <div class="fields">
+        <div class="field"><label>Avg Loan ($)</label><input type="number" id="m-dl_avgLoan" value="150000" oninput="mirrorDL('avgLoan',this.value);recalc()"/></div>
+        <div class="field"><label>Rev Share (%)</label><input type="number" id="m-dl_share" value="0.05" step="0.01" oninput="mirrorDL('share',this.value);recalc()"/></div>
+        <div class="field"><label>Loans/Batch</label><input type="number" id="m-dl_lpb" value="1000" oninput="mirrorDL('lpb',this.value);recalc()"/></div>
+        <div class="field"><label>Batches/Mo</label><input type="number" id="m-dl_batches" value="1" oninput="mirrorDL('batches',this.value);recalc()"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="m-dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="m-dl_approvalVal">25%</span></div></div>
+      </div>
+    </div>
+    <div class="sec-label">Paycrest</div>
+    <div class="pcard">
+      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="m-tog-paycrest" onclick="toggleP('paycrest')"></div></div>
+      <div class="fields">
+        <div class="field"><label>Rev Share (%)</label><input type="number" id="m-pc_share" value="7" step="0.5" oninput="mirrorPC('share',this.value);recalc()"/></div>
+        <div class="field"><label>Max/Txn ($)</label><input type="number" id="m-pc_max" value="200" oninput="mirrorPC('max',this.value);recalc()"/></div>
+        <div class="field"><label>Avg Txn ($)</label><input type="number" id="m-pc_avg" value="10000" oninput="mirrorPC('avg',this.value);recalc()"/></div>
+        <div class="field"><label>Txns/Mo Yr1</label><input type="number" id="m-pc_txns" value="10" oninput="mirrorPC('txns',this.value);recalc()"/></div>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- add partner modal -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h3>+ Add Custom Partner</h3>
+    <div class="fields one">
+      <div class="field"><label>Partner Name</label><input type="text" id="cp_name" placeholder="e.g. Stripe"/></div>
+      <div class="field"><label>Revenue Model</label><select id="cp_type" onchange="renderCPFields()"><option value="flat_verif">Flat fee + per verification</option><option value="loan_share">Loan approval share (%)</option><option value="txn_share">Transaction revenue share (%)</option><option value="fixed">Fixed monthly fee</option></select></div>
+    </div>
+    <div id="cp_fields" style="margin-top:12px"></div>
+    <div class="modal-actions"><button class="btn btn-p" onclick="addCustom()">Add Partner</button><button class="btn btn-g" onclick="closeModal()">Cancel</button></div>
+  </div>
+</div>
+
 <script>
-// ─── STATE ──────────────────────────────────────────────────────
-let on = { kasi: true, droplinked: true, paycrest: true };
+// ── STATE ───────────────────────────────────────────
+let on = { kasi:true, droplinked:true, paycrest:true };
 let customs = [];
 let chartYear = 1;
 
-const SCENARIOS = {
-  base: { gr: 40, approval: 25, txns: 10,  verifs: 400, batches: 1, avgLoan: 150000 },
-  bull: { gr: 80, approval: 30, txns: 25,  verifs: 700, batches: 2, avgLoan: 250000 },
-  bear: { gr: 10, approval: 15, txns: 5,   verifs: 250, batches: 1, avgLoan: 100000 }
+const SC = {
+  base: { gr:40, approval:25, txns:10,  verifs:400, batches:1, avgLoan:150000 },
+  bull: { gr:80, approval:30, txns:25,  verifs:700, batches:2, avgLoan:250000 },
+  bear: { gr:10, approval:15, txns:5,   verifs:250, batches:1, avgLoan:100000 }
 };
 
-// ─── HELPERS ────────────────────────────────────────────────────
-function $(id) { return document.getElementById(id); }
-function num(id) { return +$(id).value || 0; }
+function $(id){ return document.getElementById(id); }
+function num(id){ const e=$(id); return e ? +e.value||0 : 0; }
+function fmt(n){ if(n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if(n>=1e3) return '$'+(n/1e3).toFixed(1)+'K'; return '$'+Math.round(n).toLocaleString(); }
+function gr(){ return num('growthRate')/100; }
+function horizon(){ return num('horizon'); }
+function scale(b,y){ return b*Math.pow(1+gr(),y-1); }
 
-function fmt(n) {
-  if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
-  if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
-  return '$' + Math.round(n).toLocaleString();
+// ── SYNC desktop ↔ mobile ──────────────────────────
+function syncGrowth(v){
+  ['growthRate','m-growthRate'].forEach(id=>{const e=$(id);if(e)e.value=v;});
+  ['growthVal','m-growthVal'].forEach(id=>{const e=$(id);if(e)e.textContent=v+'%';});
 }
-
-function gr() { return num('growthRate') / 100; }
-function horizon() { return num('horizon'); }
-function scale(base, year) { return base * Math.pow(1 + gr(), year - 1); }
-
-// ─── PARTNER MATH (each fully independent) ──────────────────────
-
-function kasiMo(year) {
-  if (!on.kasi) return 0;
-  const fee   = num('kasi_fee');
-  const price = num('kasi_price');
-  const verifs = scale(num('kasi_verifs'), year);
-  const usage  = verifs * price;
-  return Math.max(usage, fee);           // floor = monthly min fee
+function syncApproval(v){
+  ['dl_approval','m-dl_approval'].forEach(id=>{const e=$(id);if(e)e.value=v;});
+  ['dl_approvalVal','m-dl_approvalVal'].forEach(id=>{const e=$(id);if(e)e.textContent=v+'%';});
 }
-
-function dlMo(year) {
-  if (!on.droplinked) return 0;
-  const avgLoan = num('dl_avgLoan');
-  const share   = num('dl_share') / 100;
-  const lpb     = num('dl_lpb');
-  const batches = scale(num('dl_batches'), year);
-  const approval = num('dl_approval') / 100;
-  return batches * lpb * approval * avgLoan * share;
+function syncHorizon(v){
+  ['horizon','m-horizon'].forEach(id=>{const e=$(id);if(e)e.value=v;});
 }
+function mirrorKasi(k,v){ const map={fee:'kasi_fee',price:'kasi_price',cap:'kasi_cap',verifs:'kasi_verifs'}; const e=$(map[k]); if(e)e.value=v; }
+function mirrorDL(k,v){ const map={avgLoan:'dl_avgLoan',share:'dl_share',lpb:'dl_lpb',batches:'dl_batches'}; const e=$(map[k]); if(e)e.value=v; }
+function mirrorPC(k,v){ const map={share:'pc_share',max:'pc_max',avg:'pc_avg',txns:'pc_txns'}; const e=$(map[k]); if(e)e.value=v; }
 
-function pcMo(year) {
-  if (!on.paycrest) return 0;
-  const share  = num('pc_share') / 100;
-  const maxPer = num('pc_max');
-  const avg    = num('pc_avg');
-  const txns   = scale(num('pc_txns'), year);
-  const perTxn = Math.min(avg * share, maxPer);
-  return txns * perTxn;
-}
-
-function customMo(cp, year) {
-  if (!cp.on) return 0;
-  const g = gr();
-  if (cp.type === 'flat_verif') {
-    const v = cp.verifs * Math.pow(1+g, year-1);
-    return Math.max(v * cp.price, cp.fee);
-  }
-  if (cp.type === 'loan_share') {
-    const b = cp.batches * Math.pow(1+g, year-1);
-    return b * cp.lpb * (cp.approval/100) * ((cp.minL+cp.maxL)/2) * (cp.share/100);
-  }
-  if (cp.type === 'txn_share') {
-    const t = cp.txns * Math.pow(1+g, year-1);
-    return t * Math.min(cp.avg * (cp.share/100), cp.maxPer || Infinity);
-  }
-  if (cp.type === 'fixed') return cp.fee;
+// ── MATH ────────────────────────────────────────────
+function kasiMo(y){ if(!on.kasi) return 0; return Math.max(scale(num('kasi_verifs'),y)*num('kasi_price'), num('kasi_fee')); }
+function dlMo(y)  { if(!on.droplinked) return 0; return scale(num('dl_batches'),y)*num('dl_lpb')*(num('dl_approval')/100)*num('dl_avgLoan')*(num('dl_share')/100); }
+function pcMo(y)  { if(!on.paycrest) return 0; return scale(num('pc_txns'),y)*Math.min(num('pc_avg')*num('pc_share')/100, num('pc_max')); }
+function customMo(cp,y){
+  if(!cp.on) return 0; const g=gr();
+  if(cp.type==='flat_verif')  return Math.max(cp.verifs*Math.pow(1+g,y-1)*cp.price, cp.fee);
+  if(cp.type==='loan_share')  return cp.batches*Math.pow(1+g,y-1)*cp.lpb*(cp.approval/100)*((cp.minL+cp.maxL)/2)*(cp.share/100);
+  if(cp.type==='txn_share')   return cp.txns*Math.pow(1+g,y-1)*Math.min(cp.avg*(cp.share/100),cp.maxPer||Infinity);
+  if(cp.type==='fixed')       return cp.fee;
   return 0;
 }
-
-function totalMo(year) {
-  return kasiMo(year) + dlMo(year) + pcMo(year)
-       + customs.reduce((s, cp) => s + customMo(cp, year), 0);
+function yearRev(y){
+  const k=kasiMo(y)*12,d=dlMo(y)*12,p=pcMo(y)*12;
+  const ca=customs.map(cp=>customMo(cp,y)*12);
+  return{kasi:k,droplinked:d,paycrest:p,customs:ca,total:k+d+p+ca.reduce((s,v)=>s+v,0)};
 }
 
-function yearRevenue(year) {
-  return {
-    kasi:       kasiMo(year) * 12,
-    droplinked: dlMo(year)   * 12,
-    paycrest:   pcMo(year)   * 12,
-    customs:    customs.map(cp => customMo(cp, year) * 12),
-    total:      totalMo(year) * 12
-  };
-}
-
-// ─── SCENARIO ───────────────────────────────────────────────────
-function setScenario(s, el) {
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  const sc = SCENARIOS[s];
-  $('growthRate').value     = sc.gr;       $('growthVal').textContent      = sc.gr + '%';
-  $('dl_approval').value    = sc.approval; $('dl_approvalVal').textContent = sc.approval + '%';
-  $('pc_txns').value        = sc.txns;
-  $('kasi_verifs').value    = sc.verifs;
-  $('dl_batches').value     = sc.batches;
-  $('dl_avgLoan').value     = sc.avgLoan;
+// ── SCENARIO ────────────────────────────────────────
+function setScenario(s,el){
+  document.querySelectorAll('.pill').forEach(p=>{ if(p.textContent.trim()===el.textContent.trim()) p.classList.add('active'); else p.classList.remove('active'); });
+  const sc=SC[s];
+  syncGrowth(sc.gr); syncApproval(sc.approval);
+  ['pc_txns','m-pc_txns'].forEach(id=>{const e=$(id);if(e)e.value=sc.txns;});
+  ['kasi_verifs','m-kasi_verifs'].forEach(id=>{const e=$(id);if(e)e.value=sc.verifs;});
+  ['dl_batches','m-dl_batches'].forEach(id=>{const e=$(id);if(e)e.value=sc.batches;});
+  ['dl_avgLoan','m-dl_avgLoan'].forEach(id=>{const e=$(id);if(e)e.value=sc.avgLoan;});
   recalc();
 }
 
-function toggleP(id) {
-  on[id] = !on[id];
-  $('tog-' + id).classList.toggle('on', on[id]);
-  $('card-' + id).classList.toggle('off', !on[id]);
+function toggleP(id){
+  on[id]=!on[id];
+  ['tog-'+id,'m-tog-'+id].forEach(tid=>{const e=$(tid);if(e)e.classList.toggle('on',on[id]);});
+  const c=$('card-'+id); if(c) c.classList.toggle('off',!on[id]);
   recalc();
 }
 
-// ─── RECALC ─────────────────────────────────────────────────────
-function recalc() {
-  const h = horizon();
-  if (chartYear > h) chartYear = h;
+// ── DRAWER ──────────────────────────────────────────
+function openDrawer(){ $('drawer').classList.add('open'); $('dbg').classList.add('open'); }
+function closeDrawer(){ $('drawer').classList.remove('open'); $('dbg').classList.remove('open'); }
 
-  // update inline formula notes
-  const fee = num('kasi_fee'), price = num('kasi_price');
-  const be = price > 0 ? Math.ceil(fee / price) : '∞';
-  $('kasi-be').textContent = be.toLocaleString();
+// ── RECALC ──────────────────────────────────────────
+function recalc(){
+  const h=horizon(); if(chartYear>h) chartYear=h;
 
-  const pcShare = num('pc_share') / 100, pcMax = num('pc_max');
-  const capAt = pcShare > 0 ? '$' + Math.round(pcMax / pcShare).toLocaleString() : '∞';
-  $('pc-cap-note').textContent = capAt;
+  // formula notes
+  const fee=num('kasi_fee'),price=num('kasi_price');
+  const beEl=$('kasi-be'); if(beEl) beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
+  const capEl=$('pc-cap-note'); if(capEl){const ps=num('pc_share')/100,pm=num('pc_max');capEl.textContent=ps>0?'$'+Math.round(pm/ps).toLocaleString():'∞';}
 
-  // build year data
-  const years = [];
-  for (let y = 1; y <= h; y++) years.push({ y, ...yearRevenue(y) });
+  const years=[];
+  for(let y=1;y<=h;y++) years.push({y,...yearRev(y)});
+  const yr1=years[0].total, cumul=years.reduce((s,y)=>s+y.total,0);
+  const peak=years.reduce((a,b)=>b.total>a.total?b:a);
+  const active=['kasi','droplinked','paycrest'].filter(k=>on[k]).length+customs.filter(c=>c.on).length;
 
-  // KPIs
-  const yr1    = years[0].total;
-  const cumul  = years.reduce((s, y) => s + y.total, 0);
-  const peak   = years.reduce((a, b) => b.total > a.total ? b : a);
-  const active = ['kasi','droplinked','paycrest'].filter(k => on[k]).length
-               + customs.filter(c => c.on).length;
+  const set=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
 
-  $('kpi-yr1').textContent       = fmt(yr1);
-  $('kpi-total').textContent     = fmt(cumul);
-  $('kpi-total-sub').textContent = `Over ${h} year${h > 1 ? 's' : ''}`;
-  $('kpi-peak').textContent      = fmt(peak.total);
-  $('kpi-peak-yr').textContent   = `Year ${peak.y}`;
-  $('kpi-count').textContent     = active;
+  // desktop KPIs
+  set('kpi-yr1',fmt(yr1)); set('kpi-total',fmt(cumul));
+  set('kpi-total-sub',`Over ${h} year${h>1?'s':''}`);
+  set('kpi-peak',fmt(peak.total)); set('kpi-peak-yr',`Year ${peak.y}`); set('kpi-count',active);
 
-  // year tabs
-  const tabs = $('ytabs');
-  tabs.innerHTML = '';
-  for (let y = 1; y <= h; y++) {
-    const b = document.createElement('div');
-    b.className = 'ytab' + (y === chartYear ? ' active' : '');
-    b.textContent = 'Y' + y;
-    b.onclick = () => { chartYear = y; recalc(); };
-    tabs.appendChild(b);
-  }
+  // mobile KPIs
+  set('m-yr1',fmt(yr1)); set('m-total',fmt(cumul)); set('m-peak',fmt(peak.total));
+  set('mk-yr1',fmt(yr1)); set('mk-total',fmt(cumul));
+  set('mk-tsub',`${h}yr total`);
+  set('mk-peak',fmt(peak.total)); set('mk-pyr',`Year ${peak.y}`); set('mk-count',active);
 
-  drawChart(chartYear);
-
-  // breakdown table
-  const y1 = years[0];
-  const kasiMo1 = kasiMo(1);
-  const atFloor = on.kasi && (kasiMo1 <= num('kasi_fee') + 0.01);
-
-  let rows = '';
-  if (on.kasi) {
-    const mo = kasiMo(1);
-    const usage = num('kasi_verifs') * num('kasi_price');
-    rows += `<tr>
-      <td class="t-name">Kasi Money</td>
-      <td><span class="badge b-green">API</span></td>
-      <td class="t-green">${fmt(mo)}</td>
-      <td>${fmt(mo * 12)}</td>
-      <td class="t-note">${num('kasi_verifs')} verifs × $${num('kasi_price').toFixed(2)} = ${fmt(usage)}</td>
-      <td class="${atFloor ? 't-orange' : 't-muted'}">${atFloor ? '⚠ At floor ($' + num('kasi_fee') + ')' : '✓ Above floor'}</td>
-    </tr>`;
-  }
-  if (on.droplinked) {
-    const mo = dlMo(1);
-    const approved = num('dl_batches') * num('dl_lpb') * (num('dl_approval') / 100);
-    rows += `<tr>
-      <td class="t-name">Droplinked</td>
-      <td><span class="badge b-blue">Loan</span></td>
-      <td class="t-blue">${fmt(mo)}</td>
-      <td>${fmt(mo * 12)}</td>
-      <td class="t-note">${Math.round(approved)} approved loans × ${fmt(num('dl_avgLoan'))} avg × ${num('dl_share')}%</td>
-      <td class="t-muted">—</td>
-    </tr>`;
-  }
-  if (on.paycrest) {
-    const mo = pcMo(1);
-    const perTxn = Math.min(num('pc_avg') * num('pc_share') / 100, num('pc_max'));
-    const capped = (num('pc_avg') * num('pc_share') / 100) >= num('pc_max');
-    rows += `<tr>
-      <td class="t-name">Paycrest</td>
-      <td><span class="badge b-orange">Rev Share</span></td>
-      <td class="t-orange">${fmt(mo)}</td>
-      <td>${fmt(mo * 12)}</td>
-      <td class="t-note">${num('pc_txns')} txns × $${perTxn.toFixed(2)}/txn${capped ? ' (capped)' : ''}</td>
-      <td class="${capped ? 't-orange' : 't-muted'}">${capped ? '⚠ Cap active' : '✓ Under cap'}</td>
-    </tr>`;
-  }
-  customs.filter(c => c.on).forEach(cp => {
-    const mo = customMo(cp, 1);
-    rows += `<tr>
-      <td class="t-name">${cp.name}</td>
-      <td><span class="badge b-green">Custom</span></td>
-      <td class="t-green">${fmt(mo)}</td>
-      <td>${fmt(mo * 12)}</td>
-      <td class="t-note">${cp.type.replace(/_/g, ' ')}</td>
-      <td class="t-muted">—</td>
-    </tr>`;
+  // year tabs (both)
+  ['d-ytabs','m-ytabs'].forEach(tid=>{
+    const tabs=$(tid); if(!tabs) return;
+    tabs.innerHTML='';
+    for(let y=1;y<=h;y++){
+      const b=document.createElement('div');
+      b.className='ytab'+(y===chartYear?' active':'');
+      b.textContent='Y'+y;
+      b.onclick=()=>{chartYear=y;recalc();};
+      tabs.appendChild(b);
+    }
   });
-  $('tbody').innerHTML = rows;
 
-  // year grid
-  let grid = '';
-  years.forEach(({ y, total, kasi, droplinked, paycrest, customs: crevs }) => {
-    const rows = [];
-    if (on.kasi)       rows.push({ n: 'Kasi Money',  v: kasi });
-    if (on.droplinked) rows.push({ n: 'Droplinked',  v: droplinked });
-    if (on.paycrest)   rows.push({ n: 'Paycrest',    v: paycrest });
-    customs.filter(c => c.on).forEach((cp, i) => rows.push({ n: cp.name, v: crevs[i] }));
+  drawChart('d-chart',chartYear,false);
+  drawChart('m-chart',chartYear,true);
 
-    grid += `<div class="ycol">
-      <div class="ycol-head">YEAR ${y} · ${2025 + y}</div>
-      <div class="ycol-body">
-        <div class="ycol-total">${fmt(total)}</div>
-        ${rows.map(r => `<div class="yrow"><span>${r.n}</span><span>${fmt(r.v)}</span></div>`).join('')}
-      </div>
-    </div>`;
-  });
-  $('ygrid').innerHTML = grid;
-  $('ygrid').style.gridTemplateColumns = `repeat(${h}, 1fr)`;
+  // desktop table
+  const tbody=$('d-tbody');
+  if(tbody){
+    const atFloor=on.kasi&&kasiMo(1)<=num('kasi_fee')+0.01;
+    let rows='';
+    if(on.kasi){const mo=kasiMo(1);rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('kasi_verifs')} verifs × $${num('kasi_price').toFixed(2)} = ${fmt(num('kasi_verifs')*num('kasi_price'))}</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;}
+    if(on.droplinked){const mo=dlMo(1);const appr=Math.round(num('dl_batches')*num('dl_lpb')*(num('dl_approval')/100));rows+=`<tr><td class="tn">Droplinked</td><td><span class="badge b-blue">Loan</span></td><td class="tb2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${appr} loans × ${fmt(num('dl_avgLoan'))} × ${num('dl_share')}%</td><td class="tm">—</td></tr>`;}
+    if(on.paycrest){const mo=pcMo(1);const pt=Math.min(num('pc_avg')*num('pc_share')/100,num('pc_max'));const cap=(num('pc_avg')*num('pc_share')/100)>=num('pc_max');rows+=`<tr><td class="tn">Paycrest</td><td><span class="badge b-orange">Rev Share</span></td><td class="to2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('pc_txns')} txns × $${pt.toFixed(2)}/txn${cap?' (cap)':''}</td><td class="${cap?'to2':'tm'}">${cap?'⚠ Cap':'✓ Under cap'}</td></tr>`;}
+    customs.filter(c=>c.on).forEach(cp=>{const mo=customMo(cp,1);rows+=`<tr><td class="tn">${cp.name}</td><td><span class="badge b-green">Custom</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${cp.type.replace(/_/g,' ')}</td><td class="tm">—</td></tr>`;});
+    tbody.innerHTML=rows;
+  }
+
+  // desktop year grid
+  const dg=$('d-ygrid');
+  if(dg){
+    let g='';
+    years.forEach(({y,total,kasi,droplinked,paycrest,customs:cr})=>{
+      const ps=[];
+      if(on.kasi)       ps.push({n:'Kasi Money',v:kasi});
+      if(on.droplinked) ps.push({n:'Droplinked',v:droplinked});
+      if(on.paycrest)   ps.push({n:'Paycrest',v:paycrest});
+      customs.filter(c=>c.on).forEach((cp,i)=>ps.push({n:cp.name,v:cr[i]}));
+      g+=`<div class="ycol"><div class="ycol-h">YEAR ${y} · ${2025+y}</div><div class="ycol-b"><div class="ycol-t">${fmt(total)}</div>${ps.map(p=>`<div class="yrow"><span>${p.n}</span><span>${fmt(p.v)}</span></div>`).join('')}</div></div>`;
+    });
+    dg.innerHTML=g; dg.style.gridTemplateColumns=`repeat(${h},1fr)`;
+  }
+
+  // mobile partner cards
+  const mc=$('m-cards');
+  if(mc){
+    const PLIST=[
+      {id:'kasi',      name:'Kasi Money', mo:kasiMo(1), yr:kasiMo(1)*12, col:'#00e5a0', badge:'b-green',  lbl:'API'},
+      {id:'droplinked',name:'Droplinked',  mo:dlMo(1),   yr:dlMo(1)*12,   col:'#0077ff', badge:'b-blue',   lbl:'Loan'},
+      {id:'paycrest',  name:'Paycrest',    mo:pcMo(1),   yr:pcMo(1)*12,   col:'#ff6b35', badge:'b-orange', lbl:'Rev Share'},
+      ...customs.filter(c=>c.on).map(cp=>({id:'cp'+cp.id,name:cp.name,mo:customMo(cp,1),yr:customMo(cp,1)*12,col:'#b06bff',badge:'b-green',lbl:'Custom'}))
+    ].filter(p=>p.id.startsWith('cp')||on[p.id]);
+    mc.innerHTML=PLIST.map(p=>`<div class="m-pcard"><div class="m-pcard-top"><div class="m-pcard-name">${p.name}</div><span class="badge ${p.badge}">${p.lbl}</span></div><div class="m-pcard-mo" style="color:${p.col}">${fmt(p.mo)}</div><div class="m-pcard-sub">per month</div><div class="m-pcard-yr"><span>Yr 1</span><span>${fmt(p.yr)}</span></div></div>`).join('');
+  }
+
+  // mobile forecast strip
+  const mfc=$('m-fc');
+  if(mfc){
+    const maxT=Math.max(...years.map(y=>y.total),1);
+    mfc.innerHTML=years.map(({y,total})=>`<div class="m-fc-row"><div class="m-fc-yr">Year ${y} · ${2025+y}</div><div class="m-fc-bar-bg"><div class="m-fc-bar" style="width:${Math.round(total/maxT*100)}%"></div></div><div class="m-fc-val">${fmt(total)}</div></div>`).join('');
+  }
+
+  renderCustomList();
 }
 
-// ─── CHART ──────────────────────────────────────────────────────
-function drawChart(year) {
-  const canvas = $('chart');
-  const ctx    = canvas.getContext('2d');
-  const W = canvas.parentElement.clientWidth - 44;
-  const H = 220;
-  canvas.width  = W;
-  canvas.height = H;
-
-  const pad = { t: 18, r: 16, b: 40, l: 68 };
-  const cW = W - pad.l - pad.r;
-  const cH = H - pad.t - pad.b;
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const mgr = Math.pow(1 + gr(), 1/12) - 1;
-
-  const series = [];
-  if (on.kasi)       series.push({ n:'Kasi',       c:'#00e5a0', d: months.map((_,i) => kasiMo(year) * Math.pow(1+mgr,i)) });
-  if (on.droplinked) series.push({ n:'Droplinked', c:'#0077ff', d: months.map((_,i) => dlMo(year)   * Math.pow(1+mgr,i)) });
-  if (on.paycrest)   series.push({ n:'Paycrest',   c:'#ff6b35', d: months.map((_,i) => pcMo(year)   * Math.pow(1+mgr,i)) });
-  const COLS = ['#b06bff','#ffcc00','#00d4ff','#ff4d8f'];
-  customs.filter(c => c.on).forEach((cp, i) => {
-    series.push({ n: cp.name, c: COLS[i%COLS.length], d: months.map((_,j) => customMo(cp,year) * Math.pow(1+mgr,j)) });
-  });
-
-  const stacked = months.map((_,mi) => {
-    let acc = 0;
-    return series.map(sr => { const v = sr.d[mi]; const s = { s: acc, e: acc+v }; acc += v; return s; });
-  });
-  const maxVal = Math.max(...stacked.map(m => m[m.length-1]?.e || 0), 1);
-
-  ctx.clearRect(0, 0, W, H);
-
-  // grid lines
-  ctx.strokeStyle = '#232837'; ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = pad.t + cH - (i/4)*cH;
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+cW, y); ctx.stroke();
-    ctx.fillStyle = '#6b7694'; ctx.font = '10px "Space Mono"'; ctx.textAlign = 'right';
-    ctx.fillText(fmt(maxVal*i/4), pad.l-6, y+4);
+// ── CHART ────────────────────────────────────────────
+function drawChart(id,year,mob){
+  const canvas=$(id); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth-(mob?40:44);
+  const H=mob?180:220;
+  canvas.width=W; canvas.height=H;
+  const pad={t:18,r:16,b:40,l:mob?52:68};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mgr=Math.pow(1+gr(),1/12)-1;
+  const series=[];
+  if(on.kasi)       series.push({n:'Kasi',      c:'#00e5a0',d:MO.map((_,i)=>kasiMo(year)*Math.pow(1+mgr,i))});
+  if(on.droplinked) series.push({n:'Droplinked',c:'#0077ff',d:MO.map((_,i)=>dlMo(year)*Math.pow(1+mgr,i))});
+  if(on.paycrest)   series.push({n:'Paycrest',  c:'#ff6b35',d:MO.map((_,i)=>pcMo(year)*Math.pow(1+mgr,i))});
+  const COLS=['#b06bff','#ffcc00','#00d4ff','#ff4d8f'];
+  customs.filter(c=>c.on).forEach((cp,i)=>series.push({n:cp.name,c:COLS[i%4],d:MO.map((_,j)=>customMo(cp,year)*Math.pow(1+mgr,j))}));
+  if(!series.length) return;
+  const stacked=MO.map((_,mi)=>{let a=0;return series.map(sr=>{const v=sr.d[mi];const s={s:a,e:a+v};a+=v;return s;});});
+  const maxV=Math.max(...stacked.map(m=>m[m.length-1]?.e||0),1);
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#232837'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(i/4)*cH;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#6b7694';ctx.font=`${mob?9:10}px "Space Mono"`;ctx.textAlign='right';
+    ctx.fillText(fmt(maxV*i/4),pad.l-4,y+3);
   }
-
-  // bars
-  const bw = (cW/12) * 0.64;
-  months.forEach((mo, mi) => {
-    const bx = pad.l + (mi/12)*cW + (cW/12)*0.18;
-    series.forEach((sr, si) => {
-      const seg = stacked[mi][si];
-      const y0 = pad.t + cH - (seg.e/maxVal)*cH;
-      const y1 = pad.t + cH - (seg.s/maxVal)*cH;
-      const bh = y1 - y0;
-      if (bh < 0.5) return;
-      ctx.fillStyle = sr.c + 'cc';
-      ctx.beginPath();
-      if (si === series.length-1) {
-        const r = Math.min(3, bh/2);
-        ctx.moveTo(bx, y1); ctx.lineTo(bx, y0+r);
-        ctx.quadraticCurveTo(bx, y0, bx+r, y0);
-        ctx.lineTo(bx+bw-r, y0);
-        ctx.quadraticCurveTo(bx+bw, y0, bx+bw, y0+r);
-        ctx.lineTo(bx+bw, y1); ctx.closePath();
-      } else { ctx.rect(bx, y0, bw, bh); }
+  const bw=(cW/12)*0.64;
+  MO.forEach((mo,mi)=>{
+    const bx=pad.l+(mi/12)*cW+(cW/12)*0.18;
+    series.forEach((sr,si)=>{
+      const seg=stacked[mi][si];
+      const y0=pad.t+cH-(seg.e/maxV)*cH,y1=pad.t+cH-(seg.s/maxV)*cH,bh=y1-y0;
+      if(bh<0.5) return;
+      ctx.fillStyle=sr.c+'cc'; ctx.beginPath();
+      if(si===series.length-1){const r=Math.min(3,bh/2);ctx.moveTo(bx,y1);ctx.lineTo(bx,y0+r);ctx.quadraticCurveTo(bx,y0,bx+r,y0);ctx.lineTo(bx+bw-r,y0);ctx.quadraticCurveTo(bx+bw,y0,bx+bw,y0+r);ctx.lineTo(bx+bw,y1);ctx.closePath();}
+      else{ctx.rect(bx,y0,bw,bh);}
       ctx.fill();
     });
-    ctx.fillStyle = '#6b7694'; ctx.font = '10px "Space Mono"'; ctx.textAlign = 'center';
-    ctx.fillText(mo, bx+bw/2, H-6);
+    ctx.fillStyle='#6b7694';ctx.font=`${mob?8:10}px "Space Mono"`;ctx.textAlign='center';
+    ctx.fillText(mob?mo[0]:mo,bx+bw/2,H-6);
   });
-
-  // legend
-  series.forEach((sr, i) => {
-    const lx = pad.l + i*90;
-    ctx.fillStyle = sr.c; ctx.fillRect(lx, H-30, 9, 9);
-    ctx.fillStyle = '#9aa3b8'; ctx.font = '10px "Space Mono"'; ctx.textAlign = 'left';
-    ctx.fillText(sr.n, lx+13, H-22);
+  series.forEach((sr,i)=>{
+    const lx=pad.l+i*(mob?68:90);
+    ctx.fillStyle=sr.c;ctx.fillRect(lx,H-28,8,8);
+    ctx.fillStyle='#9aa3b8';ctx.font=`${mob?8:10}px "Space Mono"`;ctx.textAlign='left';
+    ctx.fillText(sr.n,lx+12,H-21);
   });
 }
 
-// ─── MODAL ──────────────────────────────────────────────────────
-function openModal() {
-  $('modal').classList.add('open');
-  $('cp_name').value = '';
-  renderCPFields();
+// ── MODAL ────────────────────────────────────────────
+function openModal(){ $('modal').classList.add('open'); $('cp_name').value=''; renderCPFields(); }
+function closeModal(){ $('modal').classList.remove('open'); }
+function renderCPFields(){
+  const t=$('cp_type').value,f=$('cp_fields');
+  if(t==='flat_verif') f.innerHTML=`<div class="fields"><div class="field"><label>Flat Fee ($)</label><input type="number" id="cp_fee" value="500"/></div><div class="field"><label>Price/Verif ($)</label><input type="number" id="cp_price" value="0.50" step="0.01"/></div><div class="field"><label>Verifs/Mo</label><input type="number" id="cp_verifs" value="200"/></div></div>`;
+  else if(t==='loan_share') f.innerHTML=`<div class="fields"><div class="field"><label>Min Loan ($)</label><input type="number" id="cp_minL" value="10000"/></div><div class="field"><label>Max Loan ($)</label><input type="number" id="cp_maxL" value="500000"/></div><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="0.5" step="0.1"/></div><div class="field"><label>Approval (%)</label><input type="number" id="cp_approval" value="25"/></div><div class="field"><label>Batches/Mo</label><input type="number" id="cp_batches" value="1"/></div><div class="field"><label>Loans/Batch</label><input type="number" id="cp_lpb" value="500"/></div></div>`;
+  else if(t==='txn_share') f.innerHTML=`<div class="fields"><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="7" step="0.5"/></div><div class="field"><label>Max/Txn ($)</label><input type="number" id="cp_maxPer" value="200"/></div><div class="field"><label>Avg Txn ($)</label><input type="number" id="cp_avg" value="500"/></div><div class="field"><label>Txns/Mo</label><input type="number" id="cp_txns" value="100"/></div></div>`;
+  else f.innerHTML=`<div class="fields one"><div class="field"><label>Monthly Fee ($)</label><input type="number" id="cp_fee" value="1000"/></div></div>`;
 }
-function closeModal() { $('modal').classList.remove('open'); }
-
-function renderCPFields() {
-  const t = $('cp_type').value;
-  const f = $('cp_fields');
-  if (t === 'flat_verif') {
-    f.innerHTML = `<div class="fields">
-      <div class="field"><label>Flat Monthly Fee ($)</label><input type="number" id="cp_fee" value="500"/></div>
-      <div class="field"><label>Price / Verif ($)</label><input type="number" id="cp_price" value="0.50" step="0.01"/></div>
-      <div class="field"><label>Verifs / Mo (Yr 1)</label><input type="number" id="cp_verifs" value="200"/></div>
-    </div>`;
-  } else if (t === 'loan_share') {
-    f.innerHTML = `<div class="fields">
-      <div class="field"><label>Min Loan ($)</label><input type="number" id="cp_minL" value="10000"/></div>
-      <div class="field"><label>Max Loan ($)</label><input type="number" id="cp_maxL" value="500000"/></div>
-      <div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="0.5" step="0.1"/></div>
-      <div class="field"><label>Approval Rate (%)</label><input type="number" id="cp_approval" value="25"/></div>
-      <div class="field"><label>Batches / Mo</label><input type="number" id="cp_batches" value="1"/></div>
-      <div class="field"><label>Loans / Batch</label><input type="number" id="cp_lpb" value="500"/></div>
-    </div>`;
-  } else if (t === 'txn_share') {
-    f.innerHTML = `<div class="fields">
-      <div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="7" step="0.5"/></div>
-      <div class="field"><label>Max Earn / Txn ($)</label><input type="number" id="cp_maxPer" value="200"/></div>
-      <div class="field"><label>Avg Txn ($)</label><input type="number" id="cp_avg" value="500"/></div>
-      <div class="field"><label>Txns / Mo (Yr 1)</label><input type="number" id="cp_txns" value="100"/></div>
-    </div>`;
-  } else {
-    f.innerHTML = `<div class="fields single">
-      <div class="field"><label>Monthly Fee ($)</label><input type="number" id="cp_fee" value="1000"/></div>
-    </div>`;
-  }
+function addCustom(){
+  const name=$('cp_name').value.trim()||'Partner',type=$('cp_type').value;
+  const cp={id:Date.now(),name,type,on:true};
+  if(type==='flat_verif'){cp.fee=num('cp_fee');cp.price=num('cp_price');cp.verifs=num('cp_verifs');}
+  else if(type==='loan_share'){cp.minL=num('cp_minL');cp.maxL=num('cp_maxL');cp.share=num('cp_share');cp.approval=num('cp_approval');cp.batches=num('cp_batches');cp.lpb=num('cp_lpb');}
+  else if(type==='txn_share'){cp.share=num('cp_share');cp.maxPer=num('cp_maxPer');cp.avg=num('cp_avg');cp.txns=num('cp_txns');}
+  else{cp.fee=num('cp_fee');}
+  customs.push(cp); closeModal(); recalc();
+}
+function removeCustom(id){ customs=customs.filter(c=>c.id!==id); recalc(); }
+function toggleCustom(id){ const cp=customs.find(c=>c.id===id); if(cp){cp.on=!cp.on;recalc();} }
+function renderCustomList(){
+  const el=$('custom-list'); if(!el) return;
+  el.innerHTML=customs.map(cp=>`<div class="pcard ${cp.on?'':'off'}" style="pointer-events:auto"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div></div>`).join('');
 }
 
-function addCustom() {
-  const name = $('cp_name').value.trim() || 'Partner';
-  const type = $('cp_type').value;
-  const cp   = { id: Date.now(), name, type, on: true };
-  if (type === 'flat_verif')  { cp.fee = num('cp_fee'); cp.price = num('cp_price'); cp.verifs = num('cp_verifs'); }
-  if (type === 'loan_share')  { cp.minL = num('cp_minL'); cp.maxL = num('cp_maxL'); cp.share = num('cp_share'); cp.approval = num('cp_approval'); cp.batches = num('cp_batches'); cp.lpb = num('cp_lpb'); }
-  if (type === 'txn_share')   { cp.share = num('cp_share'); cp.maxPer = num('cp_maxPer'); cp.avg = num('cp_avg'); cp.txns = num('cp_txns'); }
-  if (type === 'fixed')       { cp.fee = num('cp_fee'); }
-  customs.push(cp);
-  renderCustomList();
-  closeModal();
-  recalc();
-}
-
-function removeCustom(id) { customs = customs.filter(c => c.id !== id); renderCustomList(); recalc(); }
-function toggleCustom(id) {
-  const cp = customs.find(c => c.id === id);
-  if (cp) { cp.on = !cp.on; renderCustomList(); recalc(); }
-}
-
-function renderCustomList() {
-  $('custom-list').innerHTML = customs.map(cp => `
-    <div class="pcard ${cp.on ? '' : 'off'}" style="pointer-events:auto">
-      <div class="pcard-head">
-        <div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div>
-          <button class="del-btn" onclick="removeCustom(${cp.id})">×</button>
-        </div>
-      </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div>
-    </div>`).join('');
-}
-
-window.addEventListener('resize', () => drawChart(chartYear));
+window.addEventListener('resize',()=>{ drawChart('d-chart',chartYear,false); drawChart('m-chart',chartYear,true); });
 recalc();
 </script>
 </body>
