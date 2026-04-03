@@ -29,10 +29,21 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .b-green  { background: rgba(0,229,160,.12); color: var(--accent); }
 .b-blue   { background: rgba(0,119,255,.12);  color: var(--blue); }
 .b-orange { background: rgba(255,107,53,.12); color: var(--orange); }
-.tog { width: 36px; height: 20px; background: var(--border); border-radius: 10px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+.b-purple { background: rgba(176,107,255,.12); color: var(--purple); }
+
+/* ── TOGGLE — pointer-events always on so it can be re-enabled ── */
+.tog { width: 36px; height: 20px; background: var(--border); border-radius: 10px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; pointer-events: auto !important; }
 .tog.on { background: var(--accent); }
 .tog::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: left .2s; }
 .tog.on::after { left: 19px; }
+
+/* pcard off = dim body only, not the header so toggle stays clickable */
+.pcard { background: var(--surf2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
+.pcard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pcard-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.pcard-body { transition: opacity .2s; }
+.pcard-body.off { opacity: .35; pointer-events: none; }
+
 .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .fields.one { grid-template-columns: 1fr; }
 .field { display: flex; flex-direction: column; gap: 5px; }
@@ -45,10 +56,6 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .rval { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 36px; text-align: right; }
 .formula { background: var(--surf2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 9px 12px; font-family: var(--mono); font-size: 9px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
 .formula strong { color: var(--accent); }
-.pcard { background: var(--surf2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
-.pcard.off { opacity: .4; pointer-events: none; }
-.pcard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.pcard-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .pills { display: flex; gap: 6px; }
 .pill { flex: 1; padding: 7px 0; background: var(--surf2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; text-align: center; transition: all .15s; }
 .pill.active { background: rgba(0,229,160,.1); border-color: var(--accent); color: var(--accent); }
@@ -60,6 +67,13 @@ select option { background: var(--surf2); }
 .add-btn:hover { border-color: var(--accent); color: var(--accent); }
 .del-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 2px 6px; border-radius: 4px; }
 .del-btn:hover { color: var(--orange); }
+
+/* ── PAGE TABS (desktop nav) ── */
+.page-tabs { display: flex; gap: 2px; margin-bottom: 24px; background: var(--surf2); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+.page-tab { flex: 1; padding: 8px 0; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-radius: 6px; cursor: pointer; transition: all .15s; }
+.page-tab.active { background: var(--surf); color: var(--text); }
+.page { display: none; }
+.page.active { display: block; }
 
 /* ════════════════════════════════════════
    DESKTOP  ≥ 768px
@@ -109,30 +123,63 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .yrow span:last-child { color: var(--text); }
 .wm { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--border); padding: 24px 0 0; }
 
+/* ── ASSUMPTIONS PAGE ── */
+.assm { max-width: 860px; }
+.assm-hero { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.assm-hero-eyebrow { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.assm-hero-title { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1.25; margin-bottom: 14px; }
+.assm-hero-lead { font-size: 15px; color: var(--muted); line-height: 1.75; max-width: 680px; }
+.assm-section { margin-bottom: 40px; }
+.assm-section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.assm-section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.assm-section-title { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); }
+.assm-card { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-bottom: 12px; }
+.assm-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.assm-card-body { font-size: 13px; color: var(--muted); line-height: 1.75; }
+.assm-card-body p { margin-bottom: 10px; }
+.assm-card-body p:last-child { margin-bottom: 0; }
+.assm-card-body strong { color: var(--text); font-weight: 500; }
+.assm-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 14px 0; }
+.assm-stat { background: var(--surf2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.assm-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.assm-stat-val.blue { color: var(--blue); }
+.assm-stat-val.orange { color: var(--orange); }
+.assm-stat-val.purple { color: var(--purple); }
+.assm-stat-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.assm-risk { display: flex; align-items: flex-start; gap: 10px; background: var(--surf2); border-left: 3px solid var(--orange); border-radius: 6px; padding: 12px 14px; margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.assm-risk strong { color: var(--orange); }
+.assm-opportunity { display: flex; align-items: flex-start; gap: 10px; background: var(--surf2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 12px 14px; margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.assm-opportunity strong { color: var(--accent); }
+.assm-divider { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+.scenario-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.scenario-table th { background: var(--surf2); padding: 9px 14px; text-align: left; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400; }
+.scenario-table td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+.scenario-table td:first-child { font-family: var(--mono); font-weight: 700; color: var(--text); }
+.scenario-table tr:last-child td { border-bottom: none; }
+.bear-row td { color: var(--orange) !important; }
+.base-row td { color: var(--text) !important; }
+.bull-row td { color: var(--accent) !important; }
+
 /* ════════════════════════════════════════
-   MOBILE  < 768px  —  weather / coingecko
+   MOBILE  < 768px
 ════════════════════════════════════════ */
 .mob { display: none; flex-direction: column; min-height: 100vh; padding-bottom: 32px; }
-/* mobile header */
 .m-hdr { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--border); }
 .m-logo { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: .05em; }
+.m-hdr-right { display: flex; gap: 8px; align-items: center; }
 .m-gear { width: 36px; height: 36px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .m-gear svg { width: 18px; height: 18px; stroke: var(--muted); fill: none; stroke-width: 2; }
-/* scenario row */
+.m-assm-btn { width: 36px; height: 36px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: .04em; }
 .m-scenario { padding: 14px 20px 0; }
-/* hero — big number like iPhone weather temp */
-/* ticker banner */
 .m-ticker-wrap { overflow: hidden; background: rgba(0,229,160,.06); border-top: 1px solid rgba(0,229,160,.15); border-bottom: 1px solid rgba(0,229,160,.15); padding: 9px 0; margin: 12px 0 0; }
 .m-ticker { display: flex; white-space: nowrap; animation: ticker 32s linear infinite; }
 .m-ticker span { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .02em; }
 @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
 .m-hero { padding: 30px 20px 22px; text-align: center; }
 .m-hero-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .m-hero-num { font-family: var(--mono); font-size: 54px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -.02em; }
 .m-hero-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 8px; }
 .m-hero-sub b { color: var(--accent); font-weight: 400; }
-/* partner cards strip — CoinGecko horizontal scroll */
 .m-strip-lbl { padding: 0 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .m-strip { display: flex; gap: 12px; padding: 0 20px 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .m-strip::-webkit-scrollbar { display: none; }
@@ -143,11 +190,9 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .m-pcard-sub { font-family: var(--mono); font-size: 9px; color: var(--muted); }
 .m-pcard-yr { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .m-pcard-yr span:last-child { color: var(--text); }
-/* chart */
 .m-chart-wrap { padding: 18px 20px 0; }
 .m-chart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .m-chart-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-/* forecast strip — like weather 7-day row */
 .m-fc-lbl { padding: 20px 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .m-fc-strip { margin: 0 20px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 .m-fc-row { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--border); gap: 12px; }
@@ -156,7 +201,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .m-fc-bar-bg { flex: 1; height: 4px; background: var(--surf2); border-radius: 2px; overflow: hidden; }
 .m-fc-bar { height: 100%; border-radius: 2px; background: var(--accent); transition: width .4s ease; }
 .m-fc-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--text); min-width: 70px; text-align: right; }
-/* mobile kpi 2x2 grid */
 .m-kpi-lbl { padding: 20px 20px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .m-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
 .m-kpi { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: relative; overflow: hidden; }
@@ -165,6 +209,14 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .m-kpi-l { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 .m-kpi-v { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--text); line-height: 1; }
 .m-kpi-s { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+/* mobile assumptions sheet */
+.m-assm-sheet { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 70; overflow-y: auto; }
+.m-assm-sheet.open { display: block; }
+.m-assm-sheet-header { position: sticky; top: 0; background: var(--surf); border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+.m-assm-sheet-title { font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: .08em; }
+.m-assm-close { width: 32px; height: 32px; background: var(--surf2); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--muted); }
+.m-assm-inner { padding: 20px 20px 48px; }
 
 /* settings drawer */
 .drawer-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 40; }
@@ -188,7 +240,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .btn-p { background: var(--accent); color: var(--bg); font-weight: 700; }
 .btn-g { background: transparent; border: 1px solid var(--border); color: var(--muted); }
 
-/* ── RESPONSIVE SWITCH ── */
 @media (max-width: 767px) {
   .dsk-header, .dsk-layout { display: none !important; }
   .mob { display: flex !important; }
@@ -218,65 +269,215 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="field"><label>Annual Growth Rate</label><div class="rw"><input type="range" id="growthRate" min="0" max="200" value="40" oninput="syncGrowth(this.value);recalc()"><span class="rval" id="growthVal">40%</span></div></div>
       <div class="field"><label>Forecast Horizon</label><select id="horizon" onchange="syncHorizon(this.value);recalc()"><option value="1">1 Year</option><option value="2">2 Years</option><option value="3" selected>3 Years</option><option value="5">5 Years</option></select></div>
     </div>
+
     <div class="sec-label">Partner · Kasi Money</div>
     <div class="pcard" id="card-kasi">
       <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="tog-kasi" onclick="toggleP('kasi')"></div></div>
-      <div class="formula">Revenue = MAX(verifs × price, MIN_FEE)<br>Breakeven at <strong id="kasi-be">—</strong> verifs/mo</div>
-      <div class="fields">
-        <div class="field"><label>Monthly Min Fee ($)</label><input type="number" id="kasi_fee" value="600" oninput="recalc()"/></div>
-        <div class="field"><label>Price / Verif ($)</label><input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/></div>
-        <div class="field"><label>Min Cap (verifs)</label><input type="number" id="kasi_cap" value="250" oninput="recalc()"/></div>
-        <div class="field"><label>Avg Verifs / Mo (Yr 1)</label><input type="number" id="kasi_verifs" value="400" oninput="recalc()"/></div>
+      <div class="pcard-body" id="body-kasi">
+        <div class="formula">Revenue = MAX(verifs × price, MIN_FEE)<br>Breakeven at <strong id="kasi-be">—</strong> verifs/mo</div>
+        <div class="fields">
+          <div class="field"><label>Min Fee ($)</label><input type="number" id="kasi_fee" value="600" oninput="recalc()"/></div>
+          <div class="field"><label>Price / Verif ($)</label><input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/></div>
+          <div class="field"><label>Min Cap (verifs)</label><input type="number" id="kasi_cap" value="250" oninput="recalc()"/></div>
+          <div class="field"><label>Verifs / Mo (Yr 1)</label><input type="number" id="kasi_verifs" value="400" oninput="recalc()"/></div>
+        </div>
       </div>
     </div>
+
     <div class="sec-label">Partner · Droplinked</div>
     <div class="pcard" id="card-droplinked">
       <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="tog-droplinked" onclick="toggleP('droplinked')"></div></div>
-      <div class="formula">Revenue = batches × loans × approval% × avg_loan × share%</div>
-      <div class="fields">
-        <div class="field"><label>Min Loan Size ($)</label><input type="number" id="dl_minLoan" value="50000" oninput="recalc()"/></div>
-        <div class="field"><label>Max Loan Size ($)</label><input type="number" id="dl_maxLoan" value="2000000" oninput="recalc()"/></div>
-        <div class="field"><label>Avg Loan Size ($)</label><input type="number" id="dl_avgLoan" value="150000" oninput="recalc()"/></div>
-        <div class="field"><label>Rev Share (%)</label><input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()"/></div>
-        <div class="field"><label>Loans / Batch</label><input type="number" id="dl_lpb" value="1000" oninput="recalc()"/></div>
-        <div class="field"><label>Batches / Mo (Yr 1)</label><input type="number" id="dl_batches" value="1" oninput="recalc()"/></div>
-        <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="dl_approvalVal">25%</span></div></div>
+      <div class="pcard-body" id="body-droplinked">
+        <div class="formula">Revenue = batches × loans × approval% × avg_loan × share%</div>
+        <div class="fields">
+          <div class="field"><label>Min Loan Size ($)</label><input type="number" id="dl_minLoan" value="50000" oninput="recalc()"/></div>
+          <div class="field"><label>Max Loan Size ($)</label><input type="number" id="dl_maxLoan" value="10000000" oninput="recalc()"/></div>
+          <div class="field"><label>Avg Loan Size ($)</label><input type="number" id="dl_avgLoan" value="150000" oninput="recalc()"/></div>
+          <div class="field"><label>Rev Share (%)</label><input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()"/></div>
+          <div class="field"><label>Loans / Batch</label><input type="number" id="dl_lpb" value="1000" oninput="recalc()"/></div>
+          <div class="field"><label>Batches / Mo (Yr 1)</label><input type="number" id="dl_batches" value="1" oninput="recalc()"/></div>
+          <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="dl_approvalVal">25%</span></div></div>
+        </div>
       </div>
     </div>
+
     <div class="sec-label">Partner · Paycrest</div>
     <div class="pcard" id="card-paycrest">
       <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="tog-paycrest" onclick="toggleP('paycrest')"></div></div>
-      <div class="formula">Revenue = txns × MIN(avg_txn × share%, MAX_PER_TXN)<br>Cap kicks in above <strong id="pc-cap-note">—</strong></div>
-      <div class="fields">
-        <div class="field"><label>Rev Share (%)</label><input type="number" id="pc_share" value="7" step="0.5" oninput="recalc()"/></div>
-        <div class="field"><label>Max Earn / Txn ($)</label><input type="number" id="pc_max" value="200" oninput="recalc()"/></div>
-        <div class="field"><label>Avg Txn Value ($)</label><input type="number" id="pc_avg" value="10000" oninput="recalc()"/></div>
-        <div class="field"><label>Txns / Mo (Yr 1)</label><input type="number" id="pc_txns" value="10" oninput="recalc()"/></div>
+      <div class="pcard-body" id="body-paycrest">
+        <div class="formula">Revenue = txns × MIN(avg_txn × share%, MAX_PER_TXN)<br>Cap kicks in above <strong id="pc-cap-note">—</strong></div>
+        <div class="fields">
+          <div class="field"><label>Rev Share (%)</label><input type="number" id="pc_share" value="7" step="0.5" oninput="recalc()"/></div>
+          <div class="field"><label>Max Earn / Txn ($)</label><input type="number" id="pc_max" value="200" oninput="recalc()"/></div>
+          <div class="field"><label>Avg Txn Value ($)</label><input type="number" id="pc_avg" value="10000" oninput="recalc()"/></div>
+          <div class="field"><label>Txns / Mo (Yr 1)</label><input type="number" id="pc_txns" value="10" oninput="recalc()"/></div>
+        </div>
       </div>
     </div>
+
     <div class="sec-label">Custom Partners</div>
     <div id="custom-list"></div>
     <button class="add-btn" onclick="openModal()">+ Add New Partner</button>
   </aside>
 
   <main class="d-main">
-    <div class="kpis">
-      <div class="kpi"><div class="kpi-lbl">Year 1 Revenue</div><div class="kpi-val" id="kpi-yr1">—</div><div class="kpi-sub">All active partners</div></div>
-      <div class="kpi kb"><div class="kpi-lbl">Total Forecast</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub" id="kpi-total-sub">Over 3 years</div></div>
-      <div class="kpi ko"><div class="kpi-lbl">Peak Annual Rev</div><div class="kpi-val" id="kpi-peak">—</div><div class="kpi-sub" id="kpi-peak-yr">Year —</div></div>
-      <div class="kpi kp"><div class="kpi-lbl">Active Partners</div><div class="kpi-val" id="kpi-count">—</div><div class="kpi-sub">Contributing revenue</div></div>
+    <div class="page-tabs">
+      <div class="page-tab active" onclick="showPage('forecast',this)">Forecast</div>
+      <div class="page-tab" onclick="showPage('assumptions',this)">Market Assumptions</div>
     </div>
-    <div class="chart-box">
-      <div class="chart-head"><div class="chart-lbl">Monthly Revenue Projection</div><div class="ytabs" id="d-ytabs"></div></div>
-      <canvas id="d-chart" height="220"></canvas>
+
+    <!-- FORECAST PAGE -->
+    <div class="page active" id="page-forecast">
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-lbl">Year 1 Revenue</div><div class="kpi-val" id="kpi-yr1">—</div><div class="kpi-sub">All active partners</div></div>
+        <div class="kpi kb"><div class="kpi-lbl">Total Forecast</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub" id="kpi-total-sub">Over 3 years</div></div>
+        <div class="kpi ko"><div class="kpi-lbl">Peak Annual Rev</div><div class="kpi-val" id="kpi-peak">—</div><div class="kpi-sub" id="kpi-peak-yr">Year —</div></div>
+        <div class="kpi kp"><div class="kpi-lbl">Active Partners</div><div class="kpi-val" id="kpi-count">—</div><div class="kpi-sub">Contributing revenue</div></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-head"><div class="chart-lbl">Monthly Revenue Projection</div><div class="ytabs" id="d-ytabs"></div></div>
+        <canvas id="d-chart" height="220"></canvas>
+      </div>
+      <div class="tbox">
+        <div class="tbox-head">Partner Breakdown — Year 1</div>
+        <table><thead><tr><th>Partner</th><th>Model</th><th>Mo. Revenue</th><th>Yr 1 Total</th><th>Formula Note</th><th>Status</th></tr></thead>
+        <tbody id="d-tbody"></tbody></table>
+      </div>
+      <div class="ygrid" id="d-ygrid"></div>
+      <div class="wm">CR3DENTIALS · CONFIDENTIAL · INTERNAL USE ONLY</div>
     </div>
-    <div class="tbox">
-      <div class="tbox-head">Partner Breakdown — Year 1</div>
-      <table><thead><tr><th>Partner</th><th>Model</th><th>Mo. Revenue</th><th>Yr 1 Total</th><th>Formula Note</th><th>Status</th></tr></thead>
-      <tbody id="d-tbody"></tbody></table>
+
+    <!-- ASSUMPTIONS PAGE -->
+    <div class="page" id="page-assumptions">
+      <div class="assm">
+        <div class="assm-hero">
+          <div class="assm-hero-eyebrow">Market Assumptions · April 2026</div>
+          <div class="assm-hero-title">Why We Believe the Numbers,<br>and Where We Stay Honest</div>
+          <div class="assm-hero-lead">This document frames the market context behind every figure in the forecast engine. We are building income verification infrastructure at the intersection of private credit, fintech, and blockchain — three of the fastest-moving spaces in global finance. The assumptions below are grounded in publicly available data, early commercial traction, and a clear-eyed view of what still needs to be proven.</div>
+        </div>
+
+        <!-- DROPLINKED -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--blue)"></div>
+            <div class="assm-section-title">Droplinked — US E-Commerce Private Credit</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-blue">Market</span> The Opportunity</div>
+            <div class="assm-card-body">
+              <p>Global e-commerce sales are projected to surpass <strong>$7 trillion by 2027</strong>, with Shopify holding approximately <strong>$155.91 billion in market cap</strong> as of April 2026 and commanding roughly 1-in-3 US stores. The United States alone hosts over <strong>228,000 Shopify merchants</strong>, with significant concentration in California (50k), New York (20k), Florida (18k), and Texas (16k). Our entry point is merchants generating over $1M in GMV with at least 2 years of operating history — businesses with real revenue but limited access to traditional credit due to the nature of their income.</p>
+              <p>The private credit market globally is valued at over <strong>$1.7 trillion</strong> and is actively shifting toward blockchain infrastructure. Total onchain private credit has surged <strong>133% since 2023</strong>, moving from $25 million in early 2025 to an estimated <strong>$1.675 billion in active loan market capitalization</strong> as of March 2026. We are entering this market at the exact moment institutional appetite for off-chain data-backed lending is peaking.</p>
+            </div>
+            <div class="assm-stats">
+              <div class="assm-stat"><div class="assm-stat-val blue">$7T+</div><div class="assm-stat-lbl">Global e-comm by 2027</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">228K+</div><div class="assm-stat-lbl">US Shopify merchants</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">$1.675B</div><div class="assm-stat-lbl">Onchain private credit (Mar 2026)</div></div>
+            </div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-blue">Founder Signal</span> Why Droplinked</div>
+            <div class="assm-card-body">
+              <p>Droplinked's founder has already demonstrated commercial conviction: the company crossed <strong>$2 million in referrals to capital financiers in Q4 2025</strong> — operating only in the UAE, only on the traditional lending side. They hold a <strong>$100M credit line in the MENA region</strong>, maintain a close relationship with PayPal MENA, and are actively expanding into the US market as their next growth vector. This is not a company pitching a concept. It is a company with proof of distribution, now entering a larger market.</p>
+              <p>Our partnership with Droplinked is further validated by parallel relationships being formed with <strong>Textile (Israel)</strong>, <strong>Tribeca Capital (New York)</strong>, and <strong>TradeVu (Nigeria)</strong> — confirming that demand for onchain income-verified private credit is a global, not regional, phenomenon.</p>
+            </div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-blue">Macro Tailwind</span> The Onchain Moment</div>
+            <div class="assm-card-body">
+              <p>The current US political environment is actively positioning America as the crypto capital of the world. For Cr3dentials, this creates a rare alignment: we are bringing verifiable, privacy-preserving business income data onchain at the moment regulators are building frameworks to support it. Senior tranches in onchain private credit currently offer <strong>8–10% annualized APY</strong> — attractive to institutional capital that is increasingly looking beyond over-collateralized crypto lending into real-world asset-backed yield.</p>
+              <p>Our approach — using off-chain income data to extend credit onchain — directly addresses the saturation in collateral-based DeFi lending and opens the door for global investors to participate in US small business financing.</p>
+            </div>
+            <div class="assm-opportunity"><strong>Revenue impact:</strong> The avg loan size assumption of $150K (base) reflects conservative early-stage deal flow targeting established Shopify merchants. As proof of reserves matures and deal flow scales, this figure is expected to migrate toward $250K (bull scenario). The 0.05% revenue share on approved loan volume is deliberately conservative and reflects an introductory partnership rate.</div>
+          </div>
+
+          <div class="assm-card" style="margin-top:12px">
+            <div class="assm-card-title">Scenario Assumptions — Droplinked</div>
+            <table class="scenario-table">
+              <thead><tr><th>Scenario</th><th>Avg Loan Size</th><th>Approval Rate</th><th>Monthly Batches</th><th>Rationale</th></tr></thead>
+              <tbody>
+                <tr class="bear-row"><td>Bear</td><td>$100K</td><td>15%</td><td>1</td><td>Early pipeline, tight credit conditions, small merchant segment only</td></tr>
+                <tr class="base-row"><td>Base</td><td>$150K</td><td>25%</td><td>1</td><td>Validated US deal flow, mid-market merchants, conservative approval threshold</td></tr>
+                <tr class="bull-row"><td>Bull</td><td>$250K</td><td>30%</td><td>2</td><td>US expansion fully operational, larger merchants onboarded, second batch per month</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <hr class="assm-divider"/>
+
+        <!-- KASI MONEY -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--accent)"></div>
+            <div class="assm-section-title">Kasi Money — South Africa Gig Economy</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-green">Market</span> The Underrated Opportunity</div>
+            <div class="assm-card-body">
+              <p>South Africa's gig economy is valued at approximately <strong>$230 million in 2025</strong> and growing. Kasi Money's own trajectory tells the story clearly: they started 2025 with 55,000 drivers and closed the year with over <strong>100,000 drivers</strong> — nearly doubling in 12 months. Uber captures roughly 40% of the ride-hailing driver base in their user profile, giving us a <strong>target of ~40,000 drivers to start</strong> as we move out of the pilot phase into production-scale verification.</p>
+              <p>Kasi Money's plans to expand beyond Uber to additional localized platforms means our integration is not a single-platform bet — it is a foundational layer in their growth operations. Every new platform they onboard is additional verification volume for Cr3dentials.</p>
+            </div>
+            <div class="assm-stats">
+              <div class="assm-stat"><div class="assm-stat-val">$230M+</div><div class="assm-stat-lbl">SA gig economy 2025</div></div>
+              <div class="assm-stat"><div class="assm-stat-val">100K+</div><div class="assm-stat-lbl">Kasi drivers end of 2025</div></div>
+              <div class="assm-stat"><div class="assm-stat-val">~40K</div><div class="assm-stat-lbl">Initial Uber driver target</div></div>
+            </div>
+            <div class="assm-opportunity"><strong>Revenue note:</strong> Current projections are intentionally conservative. We are exiting pilot with Kasi and entering production. The $600 monthly minimum reflects early-stage contractual protection. As verification volume scales past the 1,200/month breakeven, every additional verif at $0.50 is pure incremental margin. The upside here is underrepresented in the base model.</div>
+          </div>
+        </div>
+
+        <hr class="assm-divider"/>
+
+        <!-- PAYCREST -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--orange)"></div>
+            <div class="assm-section-title">Paycrest — African Crypto On/Off Ramp</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-orange">Market</span> Payments at Scale</div>
+            <div class="assm-card-body">
+              <p>The crypto on/off ramp market is projected to grow to <strong>$11.7 billion by 2033</strong>. Paycrest operates in Nigeria — crypto's number one market by transaction volume globally — and crossed <strong>$2 million in transaction volume in Q3–Q4 2025</strong>. The market validation extends further: Kotani Pay, another African payments partner we are onboarding, averages <strong>$15 million in transaction volume on a good month</strong>.</p>
+              <p>Our 7% revenue share with a $200 per-transaction cap means we are aligned with high-value transactions. At a $10,000 average transaction, we earn $200 per transaction — already at the cap — meaning our revenue is determined entirely by volume, not transaction size. The key variable is transaction count, which is why our bear scenario starts conservatively at 5 transactions per month.</p>
+            </div>
+            <div class="assm-stats">
+              <div class="assm-stat"><div class="assm-stat-val orange">$11.7B</div><div class="assm-stat-lbl">On/off ramp market by 2033</div></div>
+              <div class="assm-stat"><div class="assm-stat-val orange">$2M+</div><div class="assm-stat-lbl">Paycrest txn vol Q3–Q4 2025</div></div>
+              <div class="assm-stat"><div class="assm-stat-val orange">$15M</div><div class="assm-stat-lbl">Kotani Pay monthly (peak)</div></div>
+            </div>
+            <div class="assm-risk"><strong>Honest caveat:</strong> We remain grounded on Paycrest projections. This space is new and we are still identifying which banks Nigerian users transact with most for on/off ramp integration. Paycrest is actively doing BD and has connected LPs and OTC market makers in the region. We expect the bear scenario to be the most likely starting point, with meaningful upside as bank integrations complete.</div>
+          </div>
+        </div>
+
+        <hr class="assm-divider"/>
+
+        <!-- MACRO / CLOSING -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--purple)"></div>
+            <div class="assm-section-title">The Macro Case — Why Now</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-body">
+              <p>Cr3dentials is not building a single product for a single market. We are building verification infrastructure that sits between traditional income data and onchain credit systems — a layer that does not yet exist at scale but is actively demanded by every partner we speak to.</p>
+              <p>The convergence happening right now — <strong>$1.7 trillion in private credit moving toward blockchain rails</strong>, Shopify merchants underserved by traditional lenders, African payment infrastructure maturing, and the US regulatory environment opening to crypto — creates a window that will not stay open indefinitely. We are positioned early, with real contracts, real traction, and a model that generates revenue from day one without requiring speculative upside to be worth the investment.</p>
+              <p>The numbers in this forecast engine represent a grounded view of what we can see. The numbers we cannot yet model — Textile, Tribeca, TradeVu, Kotani Pay at scale — represent the upside that will make the base case look conservative in retrospect.</p>
+            </div>
+          </div>
+          <div class="assm-card" style="border-color:rgba(0,229,160,.25)">
+            <div class="assm-card-title">Key Risks to Monitor</div>
+            <div class="assm-card-body">
+              <p><strong>Droplinked US expansion timeline</strong> — deal flow depends on successful US market entry and loan batch initiation. Delays push revenue rightward, not downward.</p>
+              <p><strong>Kasi verification ramp</strong> — production scale is near but not yet realized. The minimum fee provides a revenue floor while volume builds.</p>
+              <p><strong>Paycrest bank integrations</strong> — transaction volume is directly tied to the number of supported Nigerian banks. Each integration adds volume non-linearly.</p>
+              <p><strong>Regulatory environment</strong> — onchain private credit regulation is evolving globally. We view current momentum as favorable but monitor closely.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="wm" style="padding-top:32px">CR3DENTIALS · CONFIDENTIAL · FOR ACCREDITED INVESTOR USE ONLY · APRIL 2026</div>
+      </div>
     </div>
-    <div class="ygrid" id="d-ygrid"></div>
-    <div class="wm">CR3DENTIALS · CONFIDENTIAL · INTERNAL USE ONLY</div>
   </main>
 </div>
 
@@ -284,17 +485,19 @@ tr:hover td { background: rgba(255,255,255,.02); }
 <div class="mob">
   <div class="m-hdr">
     <div class="m-logo">CR3DENTIALS</div>
-    <div class="m-gear" onclick="openDrawer()">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <div class="m-hdr-right">
+      <div class="m-assm-btn" onclick="openAssm()">INFO</div>
+      <div class="m-gear" onclick="openDrawer()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
     </div>
   </div>
 
   <div class="m-scenario"><div class="pills"><div class="pill active" onclick="setScenario('base',this)">Base</div><div class="pill" onclick="setScenario('bull',this)">Bull</div><div class="pill" onclick="setScenario('bear',this)">Bear</div></div></div>
 
-  <!-- animated ticker banner -->
   <div class="m-ticker-wrap">
     <div class="m-ticker">
-      <span>⚙ Tap the settings icon to customize your scenario inputs &nbsp;&nbsp;·&nbsp;&nbsp; </span>
+      <span>⚙ Tap settings to customize scenarios &nbsp;·&nbsp; 📊 Switch Base / Bull / Bear to explore outcomes &nbsp;·&nbsp; 💡 Tap INFO to read market assumptions &nbsp;·&nbsp; 🔀 All numbers update in real time &nbsp;·&nbsp; ⚙ Tap settings to customize scenarios &nbsp;·&nbsp; 📊 Switch Base / Bull / Bear to explore outcomes &nbsp;·&nbsp; 💡 Tap INFO to read market assumptions &nbsp;·&nbsp; 🔀 All numbers update in real time &nbsp;·&nbsp;</span>
     </div>
   </div>
 
@@ -325,7 +528,71 @@ tr:hover td { background: rgba(255,255,255,.02); }
   <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--border);padding:24px 0 0">CR3DENTIALS · CONFIDENTIAL</div>
 </div>
 
-<!-- settings drawer (mobile) -->
+<!-- mobile assumptions full-screen sheet -->
+<div class="m-assm-sheet" id="m-assm-sheet">
+  <div class="m-assm-sheet-header">
+    <div class="m-assm-sheet-title">MARKET ASSUMPTIONS</div>
+    <div class="m-assm-close" onclick="closeAssm()">✕</div>
+  </div>
+  <div class="m-assm-inner assm">
+
+    <div class="assm-hero" style="margin-bottom:24px;padding-bottom:20px">
+      <div class="assm-hero-eyebrow">April 2026</div>
+      <div style="font-size:20px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:10px">Why We Believe the Numbers</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7">Revenue assumptions grounded in market data, early traction, and a clear-eyed view of what still needs to be proven.</div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--blue)"></div><div class="assm-section-title">Droplinked · US Private Credit</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>Global e-commerce is heading past <strong>$7 trillion by 2027</strong>. There are 228,000+ Shopify merchants in the US alone — and roughly 1 in 3 US stores runs on Shopify. We are targeting merchants with $1M+ GMV who cannot access traditional bank credit despite verified revenue.</p>
+          <p>Droplinked's founder crossed <strong>$2M in capital referrals in Q4 2025</strong> operating only in the UAE. They hold a <strong>$100M credit line in MENA</strong> and are entering the US with us. Onchain private credit has surged 133% since 2023 and now sits at <strong>$1.675B in active loan market cap</strong>.</p>
+        </div>
+        <div class="assm-stats" style="grid-template-columns:1fr 1fr">
+          <div class="assm-stat"><div class="assm-stat-val blue">$1.675B</div><div class="assm-stat-lbl">Onchain credit market</div></div>
+          <div class="assm-stat"><div class="assm-stat-val blue">228K+</div><div class="assm-stat-lbl">US Shopify merchants</div></div>
+        </div>
+        <div class="assm-opportunity" style="margin-top:10px"><strong>Our loan avg:</strong> $150K base. Bear $100K, Bull $250K as proof of reserves matures.</div>
+      </div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--accent)"></div><div class="assm-section-title">Kasi Money · South Africa</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>South Africa's gig economy is worth <strong>$230M+ in 2025</strong>. Kasi Money grew from 55K to <strong>100K+ drivers in 2025</strong> — nearly doubling in one year. Our target starting base: <strong>~40K Uber drivers</strong>, growing as Kasi expands to more local platforms.</p>
+          <p>Projections are intentionally conservative — we're exiting pilot now. Every verif past 1,200/month at $0.50 is pure incremental margin above the $600 floor.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--orange)"></div><div class="assm-section-title">Paycrest · Nigeria Payments</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>Crypto on/off ramp market grows to <strong>$11.7B by 2033</strong>. Paycrest crossed <strong>$2M in txn volume Q3–Q4 2025</strong>. Kotani Pay, our second Africa partner, peaks at <strong>$15M/month</strong>.</p>
+          <p>At $10K avg txn × 7% = $700, but capped at $200/txn. Revenue is purely a volume game. We start conservatively at 5–10 txns/month and expect non-linear growth as bank integrations complete.</p>
+        </div>
+        <div class="assm-risk" style="margin-top:10px"><strong>Honest take:</strong> Paycrest is most likely to land in the bear scenario near-term. The upside is real but the integrations need to close first.</div>
+      </div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--purple)"></div><div class="assm-section-title">The Macro Case</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>Private credit is moving onchain. The US political environment is actively building crypto infrastructure. African payments infrastructure is maturing. We are the verification layer that makes all of it work — bringing off-chain income data to onchain credit systems at the exact moment the market needs it.</p>
+          <p>The numbers in this forecast engine are what we can see. <strong>Textile, Tribeca Capital, TradeVu, and Kotani Pay at scale</strong> are the upside that will make the base case look conservative in retrospect.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--border);padding:24px 0 0">CR3DENTIALS · CONFIDENTIAL · ACCREDITED INVESTORS ONLY</div>
+  </div>
+</div>
+
+<!-- settings drawer -->
 <div class="drawer-bg" id="dbg" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-top">
@@ -344,32 +611,38 @@ tr:hover td { background: rgba(255,255,255,.02); }
     <div class="sec-label">Kasi Money</div>
     <div class="pcard">
       <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="m-tog-kasi" onclick="toggleP('kasi')"></div></div>
-      <div class="fields">
-        <div class="field"><label>Min Fee ($)</label><input type="number" id="m-kasi_fee" value="600" oninput="mirrorKasi('fee',this.value);recalc()"/></div>
-        <div class="field"><label>Price/Verif ($)</label><input type="number" id="m-kasi_price" value="0.50" step="0.01" oninput="mirrorKasi('price',this.value);recalc()"/></div>
-        <div class="field"><label>Min Cap</label><input type="number" id="m-kasi_cap" value="250" oninput="mirrorKasi('cap',this.value);recalc()"/></div>
-        <div class="field"><label>Verifs/Mo Yr1</label><input type="number" id="m-kasi_verifs" value="400" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
+      <div class="pcard-body" id="m-body-kasi">
+        <div class="fields">
+          <div class="field"><label>Min Fee ($)</label><input type="number" id="m-kasi_fee" value="600" oninput="mirrorKasi('fee',this.value);recalc()"/></div>
+          <div class="field"><label>Price/Verif ($)</label><input type="number" id="m-kasi_price" value="0.50" step="0.01" oninput="mirrorKasi('price',this.value);recalc()"/></div>
+          <div class="field"><label>Min Cap</label><input type="number" id="m-kasi_cap" value="250" oninput="mirrorKasi('cap',this.value);recalc()"/></div>
+          <div class="field"><label>Verifs/Mo Yr1</label><input type="number" id="m-kasi_verifs" value="400" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
+        </div>
       </div>
     </div>
     <div class="sec-label">Droplinked</div>
     <div class="pcard">
       <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="m-tog-droplinked" onclick="toggleP('droplinked')"></div></div>
-      <div class="fields">
-        <div class="field"><label>Avg Loan ($)</label><input type="number" id="m-dl_avgLoan" value="150000" oninput="mirrorDL('avgLoan',this.value);recalc()"/></div>
-        <div class="field"><label>Rev Share (%)</label><input type="number" id="m-dl_share" value="0.05" step="0.01" oninput="mirrorDL('share',this.value);recalc()"/></div>
-        <div class="field"><label>Loans/Batch</label><input type="number" id="m-dl_lpb" value="1000" oninput="mirrorDL('lpb',this.value);recalc()"/></div>
-        <div class="field"><label>Batches/Mo</label><input type="number" id="m-dl_batches" value="1" oninput="mirrorDL('batches',this.value);recalc()"/></div>
-        <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="m-dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="m-dl_approvalVal">25%</span></div></div>
+      <div class="pcard-body" id="m-body-droplinked">
+        <div class="fields">
+          <div class="field"><label>Avg Loan ($)</label><input type="number" id="m-dl_avgLoan" value="150000" oninput="mirrorDL('avgLoan',this.value);recalc()"/></div>
+          <div class="field"><label>Rev Share (%)</label><input type="number" id="m-dl_share" value="0.05" step="0.01" oninput="mirrorDL('share',this.value);recalc()"/></div>
+          <div class="field"><label>Loans/Batch</label><input type="number" id="m-dl_lpb" value="1000" oninput="mirrorDL('lpb',this.value);recalc()"/></div>
+          <div class="field"><label>Batches/Mo</label><input type="number" id="m-dl_batches" value="1" oninput="mirrorDL('batches',this.value);recalc()"/></div>
+          <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="m-dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="m-dl_approvalVal">25%</span></div></div>
+        </div>
       </div>
     </div>
     <div class="sec-label">Paycrest</div>
     <div class="pcard">
       <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="m-tog-paycrest" onclick="toggleP('paycrest')"></div></div>
-      <div class="fields">
-        <div class="field"><label>Rev Share (%)</label><input type="number" id="m-pc_share" value="7" step="0.5" oninput="mirrorPC('share',this.value);recalc()"/></div>
-        <div class="field"><label>Max/Txn ($)</label><input type="number" id="m-pc_max" value="200" oninput="mirrorPC('max',this.value);recalc()"/></div>
-        <div class="field"><label>Avg Txn ($)</label><input type="number" id="m-pc_avg" value="10000" oninput="mirrorPC('avg',this.value);recalc()"/></div>
-        <div class="field"><label>Txns/Mo Yr1</label><input type="number" id="m-pc_txns" value="10" oninput="mirrorPC('txns',this.value);recalc()"/></div>
+      <div class="pcard-body" id="m-body-paycrest">
+        <div class="fields">
+          <div class="field"><label>Rev Share (%)</label><input type="number" id="m-pc_share" value="7" step="0.5" oninput="mirrorPC('share',this.value);recalc()"/></div>
+          <div class="field"><label>Max/Txn ($)</label><input type="number" id="m-pc_max" value="200" oninput="mirrorPC('max',this.value);recalc()"/></div>
+          <div class="field"><label>Avg Txn ($)</label><input type="number" id="m-pc_avg" value="10000" oninput="mirrorPC('avg',this.value);recalc()"/></div>
+          <div class="field"><label>Txns/Mo Yr1</label><input type="number" id="m-pc_txns" value="10" oninput="mirrorPC('txns',this.value);recalc()"/></div>
+        </div>
       </div>
     </div>
   </div>
@@ -389,7 +662,7 @@ tr:hover td { background: rgba(255,255,255,.02); }
 </div>
 
 <script>
-// ── STATE ───────────────────────────────────────────
+// ── STATE ────────────────────────────────────────────
 let on = { kasi:true, droplinked:true, paycrest:true };
 let customs = [];
 let chartYear = 1;
@@ -401,13 +674,26 @@ const SC = {
 };
 
 function $(id){ return document.getElementById(id); }
-function num(id){ const e=$(id); return e ? +e.value||0 : 0; }
-function fmt(n){ if(n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if(n>=1e3) return '$'+(n/1e3).toFixed(1)+'K'; return '$'+Math.round(n).toLocaleString(); }
+function num(id){ const e=$(id); return e?+e.value||0:0; }
+function fmt(n){ if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M'; if(n>=1e3)return'$'+(n/1e3).toFixed(1)+'K'; return'$'+Math.round(n).toLocaleString(); }
 function gr(){ return num('growthRate')/100; }
 function horizon(){ return num('horizon'); }
 function scale(b,y){ return b*Math.pow(1+gr(),y-1); }
 
-// ── SYNC desktop ↔ mobile ──────────────────────────
+// ── PAGE TABS ────────────────────────────────────────
+function showPage(id, el){
+  document.querySelectorAll('.page-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  $('page-'+id).classList.add('active');
+  if(id==='forecast') setTimeout(()=>{ drawChart('d-chart',chartYear,false); },50);
+}
+
+// ── MOBILE ASSUMPTIONS SHEET ─────────────────────────
+function openAssm(){ $('m-assm-sheet').classList.add('open'); }
+function closeAssm(){ $('m-assm-sheet').classList.remove('open'); }
+
+// ── SYNC desktop ↔ mobile ────────────────────────────
 function syncGrowth(v){
   ['growthRate','m-growthRate'].forEach(id=>{const e=$(id);if(e)e.value=v;});
   ['growthVal','m-growthVal'].forEach(id=>{const e=$(id);if(e)e.textContent=v+'%';});
@@ -419,20 +705,30 @@ function syncApproval(v){
 function syncHorizon(v){
   ['horizon','m-horizon'].forEach(id=>{const e=$(id);if(e)e.value=v;});
 }
-function mirrorKasi(k,v){ const map={fee:'kasi_fee',price:'kasi_price',cap:'kasi_cap',verifs:'kasi_verifs'}; const e=$(map[k]); if(e)e.value=v; }
-function mirrorDL(k,v){ const map={avgLoan:'dl_avgLoan',share:'dl_share',lpb:'dl_lpb',batches:'dl_batches'}; const e=$(map[k]); if(e)e.value=v; }
-function mirrorPC(k,v){ const map={share:'pc_share',max:'pc_max',avg:'pc_avg',txns:'pc_txns'}; const e=$(map[k]); if(e)e.value=v; }
+function mirrorKasi(k,v){ const m={fee:'kasi_fee',price:'kasi_price',cap:'kasi_cap',verifs:'kasi_verifs'}; const e=$(m[k]);if(e)e.value=v; }
+function mirrorDL(k,v){ const m={avgLoan:'dl_avgLoan',share:'dl_share',lpb:'dl_lpb',batches:'dl_batches'}; const e=$(m[k]);if(e)e.value=v; }
+function mirrorPC(k,v){ const m={share:'pc_share',max:'pc_max',avg:'pc_avg',txns:'pc_txns'}; const e=$(m[k]);if(e)e.value=v; }
 
-// ── MATH ────────────────────────────────────────────
-function kasiMo(y){ if(!on.kasi) return 0; return Math.max(scale(num('kasi_verifs'),y)*num('kasi_price'), num('kasi_fee')); }
-function dlMo(y)  { if(!on.droplinked) return 0; return scale(num('dl_batches'),y)*num('dl_lpb')*(num('dl_approval')/100)*num('dl_avgLoan')*(num('dl_share')/100); }
-function pcMo(y)  { if(!on.paycrest) return 0; return scale(num('pc_txns'),y)*Math.min(num('pc_avg')*num('pc_share')/100, num('pc_max')); }
+// ── TOGGLE — fixed: only dims body, header stays interactive ────
+function toggleP(id){
+  on[id]=!on[id];
+  // update all toggle switches for this partner
+  ['tog-'+id,'m-tog-'+id].forEach(tid=>{const e=$(tid);if(e)e.classList.toggle('on',on[id]);});
+  // only dim the body content, not the whole card
+  ['body-'+id,'m-body-'+id].forEach(bid=>{const e=$(bid);if(e)e.classList.toggle('off',!on[id]);});
+  recalc();
+}
+
+// ── MATH ─────────────────────────────────────────────
+function kasiMo(y){ if(!on.kasi)return 0; return Math.max(scale(num('kasi_verifs'),y)*num('kasi_price'),num('kasi_fee')); }
+function dlMo(y){ if(!on.droplinked)return 0; return scale(num('dl_batches'),y)*num('dl_lpb')*(num('dl_approval')/100)*num('dl_avgLoan')*(num('dl_share')/100); }
+function pcMo(y){ if(!on.paycrest)return 0; return scale(num('pc_txns'),y)*Math.min(num('pc_avg')*num('pc_share')/100,num('pc_max')); }
 function customMo(cp,y){
-  if(!cp.on) return 0; const g=gr();
-  if(cp.type==='flat_verif')  return Math.max(cp.verifs*Math.pow(1+g,y-1)*cp.price, cp.fee);
-  if(cp.type==='loan_share')  return cp.batches*Math.pow(1+g,y-1)*cp.lpb*(cp.approval/100)*((cp.minL+cp.maxL)/2)*(cp.share/100);
-  if(cp.type==='txn_share')   return cp.txns*Math.pow(1+g,y-1)*Math.min(cp.avg*(cp.share/100),cp.maxPer||Infinity);
-  if(cp.type==='fixed')       return cp.fee;
+  if(!cp.on)return 0; const g=gr();
+  if(cp.type==='flat_verif') return Math.max(cp.verifs*Math.pow(1+g,y-1)*cp.price,cp.fee);
+  if(cp.type==='loan_share') return cp.batches*Math.pow(1+g,y-1)*cp.lpb*(cp.approval/100)*((cp.minL+cp.maxL)/2)*(cp.share/100);
+  if(cp.type==='txn_share')  return cp.txns*Math.pow(1+g,y-1)*Math.min(cp.avg*(cp.share/100),cp.maxPer||Infinity);
+  if(cp.type==='fixed')      return cp.fee;
   return 0;
 }
 function yearRev(y){
@@ -441,9 +737,9 @@ function yearRev(y){
   return{kasi:k,droplinked:d,paycrest:p,customs:ca,total:k+d+p+ca.reduce((s,v)=>s+v,0)};
 }
 
-// ── SCENARIO ────────────────────────────────────────
+// ── SCENARIO ─────────────────────────────────────────
 function setScenario(s,el){
-  document.querySelectorAll('.pill').forEach(p=>{ if(p.textContent.trim()===el.textContent.trim()) p.classList.add('active'); else p.classList.remove('active'); });
+  document.querySelectorAll('.pill').forEach(p=>{ p.classList.toggle('active',p.textContent.trim()===el.textContent.trim()); });
   const sc=SC[s];
   syncGrowth(sc.gr); syncApproval(sc.approval);
   ['pc_txns','m-pc_txns'].forEach(id=>{const e=$(id);if(e)e.value=sc.txns;});
@@ -453,66 +749,42 @@ function setScenario(s,el){
   recalc();
 }
 
-function toggleP(id){
-  on[id]=!on[id];
-  ['tog-'+id,'m-tog-'+id].forEach(tid=>{const e=$(tid);if(e)e.classList.toggle('on',on[id]);});
-  const c=$('card-'+id); if(c) c.classList.toggle('off',!on[id]);
-  recalc();
-}
-
-// ── DRAWER ──────────────────────────────────────────
+// ── DRAWER ───────────────────────────────────────────
 function openDrawer(){ $('drawer').classList.add('open'); $('dbg').classList.add('open'); }
 function closeDrawer(){ $('drawer').classList.remove('open'); $('dbg').classList.remove('open'); }
-
-// swipe down to close drawer
 (function(){
-  let startY=0, dragging=false;
-  const drawer=$('drawer');
-  drawer.addEventListener('touchstart',e=>{ startY=e.touches[0].clientY; dragging=true; },{passive:true});
-  drawer.addEventListener('touchmove',e=>{
-    if(!dragging) return;
-    const dy=e.touches[0].clientY-startY;
-    if(dy>0) drawer.style.transform=`translateY(${dy}px)`;
-  },{passive:true});
-  drawer.addEventListener('touchend',e=>{
-    const dy=e.changedTouches[0].clientY-startY;
-    drawer.style.transform='';
-    if(dy>80) closeDrawer();
-    dragging=false;
-  });
+  let startY=0;
+  const dr=$('drawer');
+  dr.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;},{passive:true});
+  dr.addEventListener('touchmove',e=>{const dy=e.touches[0].clientY-startY;if(dy>0)dr.style.transform=`translateY(${dy}px)`;},{passive:true});
+  dr.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-startY;dr.style.transform='';if(dy>80)closeDrawer();});
 })();
 
-// ── RECALC ──────────────────────────────────────────
+// ── RECALC ───────────────────────────────────────────
 function recalc(){
-  const h=horizon(); if(chartYear>h) chartYear=h;
+  const h=horizon(); if(chartYear>h)chartYear=h;
 
-  // formula notes
   const fee=num('kasi_fee'),price=num('kasi_price');
-  const beEl=$('kasi-be'); if(beEl) beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
-  const capEl=$('pc-cap-note'); if(capEl){const ps=num('pc_share')/100,pm=num('pc_max');capEl.textContent=ps>0?'$'+Math.round(pm/ps).toLocaleString():'∞';}
+  const beEl=$('kasi-be');if(beEl)beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
+  const capEl=$('pc-cap-note');if(capEl){const ps=num('pc_share')/100,pm=num('pc_max');capEl.textContent=ps>0?'$'+Math.round(pm/ps).toLocaleString():'∞';}
 
   const years=[];
-  for(let y=1;y<=h;y++) years.push({y,...yearRev(y)});
-  const yr1=years[0].total, cumul=years.reduce((s,y)=>s+y.total,0);
+  for(let y=1;y<=h;y++)years.push({y,...yearRev(y)});
+  const yr1=years[0].total,cumul=years.reduce((s,y)=>s+y.total,0);
   const peak=years.reduce((a,b)=>b.total>a.total?b:a);
   const active=['kasi','droplinked','paycrest'].filter(k=>on[k]).length+customs.filter(c=>c.on).length;
 
   const set=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
-
-  // desktop KPIs
   set('kpi-yr1',fmt(yr1)); set('kpi-total',fmt(cumul));
   set('kpi-total-sub',`Over ${h} year${h>1?'s':''}`);
   set('kpi-peak',fmt(peak.total)); set('kpi-peak-yr',`Year ${peak.y}`); set('kpi-count',active);
-
-  // mobile KPIs
   set('m-yr1',fmt(yr1)); set('m-total',fmt(cumul)); set('m-peak',fmt(peak.total));
   set('mk-yr1',fmt(yr1)); set('mk-total',fmt(cumul));
   set('mk-tsub',`${h}yr total`);
   set('mk-peak',fmt(peak.total)); set('mk-pyr',`Year ${peak.y}`); set('mk-count',active);
 
-  // year tabs (both)
   ['d-ytabs','m-ytabs'].forEach(tid=>{
-    const tabs=$(tid); if(!tabs) return;
+    const tabs=$(tid);if(!tabs)return;
     tabs.innerHTML='';
     for(let y=1;y<=h;y++){
       const b=document.createElement('div');
@@ -526,46 +798,42 @@ function recalc(){
   drawChart('d-chart',chartYear,false);
   drawChart('m-chart',chartYear,true);
 
-  // desktop table
   const tbody=$('d-tbody');
   if(tbody){
     const atFloor=on.kasi&&kasiMo(1)<=num('kasi_fee')+0.01;
     let rows='';
-    if(on.kasi){const mo=kasiMo(1);rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('kasi_verifs')} verifs × $${num('kasi_price').toFixed(2)} = ${fmt(num('kasi_verifs')*num('kasi_price'))}</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;}
+    if(on.kasi){const mo=kasiMo(1);rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('kasi_verifs')} verifs × $${num('kasi_price').toFixed(2)}</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;}
     if(on.droplinked){const mo=dlMo(1);const appr=Math.round(num('dl_batches')*num('dl_lpb')*(num('dl_approval')/100));rows+=`<tr><td class="tn">Droplinked</td><td><span class="badge b-blue">Loan</span></td><td class="tb2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${appr} loans × ${fmt(num('dl_avgLoan'))} × ${num('dl_share')}%</td><td class="tm">—</td></tr>`;}
     if(on.paycrest){const mo=pcMo(1);const pt=Math.min(num('pc_avg')*num('pc_share')/100,num('pc_max'));const cap=(num('pc_avg')*num('pc_share')/100)>=num('pc_max');rows+=`<tr><td class="tn">Paycrest</td><td><span class="badge b-orange">Rev Share</span></td><td class="to2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('pc_txns')} txns × $${pt.toFixed(2)}/txn${cap?' (cap)':''}</td><td class="${cap?'to2':'tm'}">${cap?'⚠ Cap':'✓ Under cap'}</td></tr>`;}
     customs.filter(c=>c.on).forEach(cp=>{const mo=customMo(cp,1);rows+=`<tr><td class="tn">${cp.name}</td><td><span class="badge b-green">Custom</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${cp.type.replace(/_/g,' ')}</td><td class="tm">—</td></tr>`;});
     tbody.innerHTML=rows;
   }
 
-  // desktop year grid
   const dg=$('d-ygrid');
   if(dg){
     let g='';
     years.forEach(({y,total,kasi,droplinked,paycrest,customs:cr})=>{
       const ps=[];
-      if(on.kasi)       ps.push({n:'Kasi Money',v:kasi});
-      if(on.droplinked) ps.push({n:'Droplinked',v:droplinked});
-      if(on.paycrest)   ps.push({n:'Paycrest',v:paycrest});
+      if(on.kasi)ps.push({n:'Kasi Money',v:kasi});
+      if(on.droplinked)ps.push({n:'Droplinked',v:droplinked});
+      if(on.paycrest)ps.push({n:'Paycrest',v:paycrest});
       customs.filter(c=>c.on).forEach((cp,i)=>ps.push({n:cp.name,v:cr[i]}));
       g+=`<div class="ycol"><div class="ycol-h">YEAR ${y} · ${2025+y}</div><div class="ycol-b"><div class="ycol-t">${fmt(total)}</div>${ps.map(p=>`<div class="yrow"><span>${p.n}</span><span>${fmt(p.v)}</span></div>`).join('')}</div></div>`;
     });
     dg.innerHTML=g; dg.style.gridTemplateColumns=`repeat(${h},1fr)`;
   }
 
-  // mobile partner cards
   const mc=$('m-cards');
   if(mc){
     const PLIST=[
-      {id:'kasi',      name:'Kasi Money', mo:kasiMo(1), yr:kasiMo(1)*12, col:'#00e5a0', badge:'b-green',  lbl:'API'},
-      {id:'droplinked',name:'Droplinked',  mo:dlMo(1),   yr:dlMo(1)*12,   col:'#0077ff', badge:'b-blue',   lbl:'Loan'},
-      {id:'paycrest',  name:'Paycrest',    mo:pcMo(1),   yr:pcMo(1)*12,   col:'#ff6b35', badge:'b-orange', lbl:'Rev Share'},
+      {id:'kasi',name:'Kasi Money',mo:kasiMo(1),yr:kasiMo(1)*12,col:'#00e5a0',badge:'b-green',lbl:'API'},
+      {id:'droplinked',name:'Droplinked',mo:dlMo(1),yr:dlMo(1)*12,col:'#0077ff',badge:'b-blue',lbl:'Loan'},
+      {id:'paycrest',name:'Paycrest',mo:pcMo(1),yr:pcMo(1)*12,col:'#ff6b35',badge:'b-orange',lbl:'Rev Share'},
       ...customs.filter(c=>c.on).map(cp=>({id:'cp'+cp.id,name:cp.name,mo:customMo(cp,1),yr:customMo(cp,1)*12,col:'#b06bff',badge:'b-green',lbl:'Custom'}))
     ].filter(p=>p.id.startsWith('cp')||on[p.id]);
     mc.innerHTML=PLIST.map(p=>`<div class="m-pcard"><div class="m-pcard-top"><div class="m-pcard-name">${p.name}</div><span class="badge ${p.badge}">${p.lbl}</span></div><div class="m-pcard-mo" style="color:${p.col}">${fmt(p.mo)}</div><div class="m-pcard-sub">per month</div><div class="m-pcard-yr"><span>Yr 1</span><span>${fmt(p.yr)}</span></div></div>`).join('');
   }
 
-  // mobile forecast strip
   const mfc=$('m-fc');
   if(mfc){
     const maxT=Math.max(...years.map(y=>y.total),1);
@@ -575,28 +843,28 @@ function recalc(){
   renderCustomList();
 }
 
-// ── CHART ────────────────────────────────────────────
+// ── CHART ─────────────────────────────────────────────
 function drawChart(id,year,mob){
-  const canvas=$(id); if(!canvas) return;
+  const canvas=$(id);if(!canvas)return;
   const ctx=canvas.getContext('2d');
   const W=canvas.parentElement.clientWidth-(mob?40:44);
   const H=mob?180:220;
-  canvas.width=W; canvas.height=H;
+  canvas.width=W;canvas.height=H;
   const pad={t:18,r:16,b:40,l:mob?52:68};
-  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const mgr=Math.pow(1+gr(),1/12)-1;
   const series=[];
-  if(on.kasi)       series.push({n:'Kasi',      c:'#00e5a0',d:MO.map((_,i)=>kasiMo(year)*Math.pow(1+mgr,i))});
-  if(on.droplinked) series.push({n:'Droplinked',c:'#0077ff',d:MO.map((_,i)=>dlMo(year)*Math.pow(1+mgr,i))});
-  if(on.paycrest)   series.push({n:'Paycrest',  c:'#ff6b35',d:MO.map((_,i)=>pcMo(year)*Math.pow(1+mgr,i))});
+  if(on.kasi)series.push({n:'Kasi',c:'#00e5a0',d:MO.map((_,i)=>kasiMo(year)*Math.pow(1+mgr,i))});
+  if(on.droplinked)series.push({n:'Droplinked',c:'#0077ff',d:MO.map((_,i)=>dlMo(year)*Math.pow(1+mgr,i))});
+  if(on.paycrest)series.push({n:'Paycrest',c:'#ff6b35',d:MO.map((_,i)=>pcMo(year)*Math.pow(1+mgr,i))});
   const COLS=['#b06bff','#ffcc00','#00d4ff','#ff4d8f'];
   customs.filter(c=>c.on).forEach((cp,i)=>series.push({n:cp.name,c:COLS[i%4],d:MO.map((_,j)=>customMo(cp,year)*Math.pow(1+mgr,j))}));
-  if(!series.length) return;
+  if(!series.length)return;
   const stacked=MO.map((_,mi)=>{let a=0;return series.map(sr=>{const v=sr.d[mi];const s={s:a,e:a+v};a+=v;return s;});});
   const maxV=Math.max(...stacked.map(m=>m[m.length-1]?.e||0),1);
   ctx.clearRect(0,0,W,H);
-  ctx.strokeStyle='#232837'; ctx.lineWidth=1;
+  ctx.strokeStyle='#232837';ctx.lineWidth=1;
   for(let i=0;i<=4;i++){
     const y=pad.t+cH-(i/4)*cH;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
@@ -609,8 +877,8 @@ function drawChart(id,year,mob){
     series.forEach((sr,si)=>{
       const seg=stacked[mi][si];
       const y0=pad.t+cH-(seg.e/maxV)*cH,y1=pad.t+cH-(seg.s/maxV)*cH,bh=y1-y0;
-      if(bh<0.5) return;
-      ctx.fillStyle=sr.c+'cc'; ctx.beginPath();
+      if(bh<0.5)return;
+      ctx.fillStyle=sr.c+'cc';ctx.beginPath();
       if(si===series.length-1){const r=Math.min(3,bh/2);ctx.moveTo(bx,y1);ctx.lineTo(bx,y0+r);ctx.quadraticCurveTo(bx,y0,bx+r,y0);ctx.lineTo(bx+bw-r,y0);ctx.quadraticCurveTo(bx+bw,y0,bx+bw,y0+r);ctx.lineTo(bx+bw,y1);ctx.closePath();}
       else{ctx.rect(bx,y0,bw,bh);}
       ctx.fill();
@@ -626,14 +894,14 @@ function drawChart(id,year,mob){
   });
 }
 
-// ── MODAL ────────────────────────────────────────────
+// ── MODAL ─────────────────────────────────────────────
 function openModal(){ $('modal').classList.add('open'); $('cp_name').value=''; renderCPFields(); }
 function closeModal(){ $('modal').classList.remove('open'); }
 function renderCPFields(){
   const t=$('cp_type').value,f=$('cp_fields');
-  if(t==='flat_verif') f.innerHTML=`<div class="fields"><div class="field"><label>Flat Fee ($)</label><input type="number" id="cp_fee" value="500"/></div><div class="field"><label>Price/Verif ($)</label><input type="number" id="cp_price" value="0.50" step="0.01"/></div><div class="field"><label>Verifs/Mo</label><input type="number" id="cp_verifs" value="200"/></div></div>`;
-  else if(t==='loan_share') f.innerHTML=`<div class="fields"><div class="field"><label>Min Loan ($)</label><input type="number" id="cp_minL" value="10000"/></div><div class="field"><label>Max Loan ($)</label><input type="number" id="cp_maxL" value="500000"/></div><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="0.5" step="0.1"/></div><div class="field"><label>Approval (%)</label><input type="number" id="cp_approval" value="25"/></div><div class="field"><label>Batches/Mo</label><input type="number" id="cp_batches" value="1"/></div><div class="field"><label>Loans/Batch</label><input type="number" id="cp_lpb" value="500"/></div></div>`;
-  else if(t==='txn_share') f.innerHTML=`<div class="fields"><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="7" step="0.5"/></div><div class="field"><label>Max/Txn ($)</label><input type="number" id="cp_maxPer" value="200"/></div><div class="field"><label>Avg Txn ($)</label><input type="number" id="cp_avg" value="500"/></div><div class="field"><label>Txns/Mo</label><input type="number" id="cp_txns" value="100"/></div></div>`;
+  if(t==='flat_verif')f.innerHTML=`<div class="fields"><div class="field"><label>Flat Fee ($)</label><input type="number" id="cp_fee" value="500"/></div><div class="field"><label>Price/Verif ($)</label><input type="number" id="cp_price" value="0.50" step="0.01"/></div><div class="field"><label>Verifs/Mo</label><input type="number" id="cp_verifs" value="200"/></div></div>`;
+  else if(t==='loan_share')f.innerHTML=`<div class="fields"><div class="field"><label>Min Loan ($)</label><input type="number" id="cp_minL" value="10000"/></div><div class="field"><label>Max Loan ($)</label><input type="number" id="cp_maxL" value="500000"/></div><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="0.5" step="0.1"/></div><div class="field"><label>Approval (%)</label><input type="number" id="cp_approval" value="25"/></div><div class="field"><label>Batches/Mo</label><input type="number" id="cp_batches" value="1"/></div><div class="field"><label>Loans/Batch</label><input type="number" id="cp_lpb" value="500"/></div></div>`;
+  else if(t==='txn_share')f.innerHTML=`<div class="fields"><div class="field"><label>Rev Share (%)</label><input type="number" id="cp_share" value="7" step="0.5"/></div><div class="field"><label>Max/Txn ($)</label><input type="number" id="cp_maxPer" value="200"/></div><div class="field"><label>Avg Txn ($)</label><input type="number" id="cp_avg" value="500"/></div><div class="field"><label>Txns/Mo</label><input type="number" id="cp_txns" value="100"/></div></div>`;
   else f.innerHTML=`<div class="fields one"><div class="field"><label>Monthly Fee ($)</label><input type="number" id="cp_fee" value="1000"/></div></div>`;
 }
 function addCustom(){
@@ -643,13 +911,13 @@ function addCustom(){
   else if(type==='loan_share'){cp.minL=num('cp_minL');cp.maxL=num('cp_maxL');cp.share=num('cp_share');cp.approval=num('cp_approval');cp.batches=num('cp_batches');cp.lpb=num('cp_lpb');}
   else if(type==='txn_share'){cp.share=num('cp_share');cp.maxPer=num('cp_maxPer');cp.avg=num('cp_avg');cp.txns=num('cp_txns');}
   else{cp.fee=num('cp_fee');}
-  customs.push(cp); closeModal(); recalc();
+  customs.push(cp);closeModal();recalc();
 }
-function removeCustom(id){ customs=customs.filter(c=>c.id!==id); recalc(); }
-function toggleCustom(id){ const cp=customs.find(c=>c.id===id); if(cp){cp.on=!cp.on;recalc();} }
+function removeCustom(id){ customs=customs.filter(c=>c.id!==id);recalc(); }
+function toggleCustom(id){ const cp=customs.find(c=>c.id===id);if(cp){cp.on=!cp.on;recalc();} }
 function renderCustomList(){
-  const el=$('custom-list'); if(!el) return;
-  el.innerHTML=customs.map(cp=>`<div class="pcard ${cp.on?'':'off'}" style="pointer-events:auto"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div></div>`).join('');
+  const el=$('custom-list');if(!el)return;
+  el.innerHTML=customs.map(cp=>`<div class="pcard"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div class="pcard-body ${cp.on?'':'off'}"><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div></div></div>`).join('');
 }
 
 window.addEventListener('resize',()=>{ drawChart('d-chart',chartYear,false); drawChart('m-chart',chartYear,true); });
