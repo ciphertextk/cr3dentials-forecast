@@ -274,12 +274,15 @@ tr:hover td { background: rgba(255,255,255,.02); }
     <div class="pcard" id="card-kasi">
       <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="tog-kasi" onclick="toggleP('kasi')"></div></div>
       <div class="pcard-body" id="body-kasi">
-        <div class="formula">Revenue = MAX(verifs × price, MIN_FEE)<br>Breakeven at <strong id="kasi-be">—</strong> verifs/mo</div>
+        <div class="formula">Revenue = MAX(drivers × $0.50, $600/mo)<br>Target MRR: <strong id="kasi-mrr-note">—</strong> · ARR: <strong id="kasi-arr-note">—</strong><br>Breakeven at <strong id="kasi-be">—</strong> drivers/mo</div>
         <div class="fields">
+          <div class="field"><label>Driver Market</label><input type="number" id="kasi_total_drivers" value="40000" oninput="recalc()"/></div>
+          <div class="field"><label>Drivers / Mo</label><input type="number" id="kasi_verifs" value="5000" oninput="recalc()"/></div>
           <div class="field"><label>Min Fee ($)</label><input type="number" id="kasi_fee" value="600" oninput="recalc()"/></div>
           <div class="field"><label>Price / Verif ($)</label><input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/></div>
-          <div class="field"><label>Min Cap (verifs)</label><input type="number" id="kasi_cap" value="250" oninput="recalc()"/></div>
-          <div class="field"><label>Verifs / Mo (Yr 1)</label><input type="number" id="kasi_verifs" value="400" oninput="recalc()"/></div>
+        </div>
+        <div style="margin-top:8px;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6">
+          Penetration: <strong id="kasi-pct">—</strong> of <span id="kasi-total-display">40,000</span> drivers
         </div>
       </div>
     </div>
@@ -288,23 +291,21 @@ tr:hover td { background: rgba(255,255,255,.02); }
     <div class="pcard" id="card-droplinked">
       <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="tog-droplinked" onclick="toggleP('droplinked')"></div></div>
       <div class="pcard-body" id="body-droplinked">
-        <div class="formula">Revenue = batches × loans × approval% × avg_loan × share%</div>
+        <div class="formula">Pipeline: emails → qualify (10%) → close (5–10%) → funded loans<br>Revenue = closed loans × avg loan × 0.05% = <strong>$125/loan</strong><br>Pipeline live: <strong id="dl-pipeline-note">—</strong></div>
         <div class="fields">
-          <div class="field"><label>Min Loan Size ($)</label><input type="number" id="dl_minLoan" value="50000" oninput="recalc()"/></div>
-          <div class="field"><label>Max Loan Size ($)</label><input type="number" id="dl_maxLoan" value="10000000" oninput="recalc()"/></div>
-          <div class="field"><label>Avg Loan Size ($)</label><input type="number" id="dl_avgLoan" value="150000" oninput="recalc()"/></div>
-          <div class="field"><label>Rev Share (%)</label><input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()"/></div>
-          <div class="field"><label>Loans / Batch</label><input type="number" id="dl_lpb" value="1000" oninput="recalc()"/></div>
-          <div class="field"><label>Batches / Mo (Yr 1)</label><input type="number" id="dl_batches" value="1" oninput="recalc()"/></div>
-          <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="dl_approvalVal">25%</span></div></div>
+          <div class="field"><label>Emails / Mo (Yr 1)</label><input type="number" id="dl_emails" value="1000" oninput="recalc()"/></div>
+          <div class="field"><label>Qualify Rate (%)</label><input type="number" id="dl_qualify" value="7" step="1" oninput="recalc()"/></div>
+          <div class="field"><label>Close Rate (%)</label><input type="number" id="dl_close" value="7" step="1" oninput="recalc()"/></div>
+          <div class="field"><label>Avg Loan Size ($)</label><input type="number" id="dl_avgLoan" value="250000" oninput="recalc()"/></div>
+          <div class="field" style="grid-column:1/-1"><label>Origination Fee (%) — fixed at 0.05%</label><input type="number" id="dl_share" value="0.05" step="0.01" oninput="recalc()" style="opacity:.5" readonly/></div>
         </div>
       </div>
     </div>
 
     <div class="sec-label">Partner · Paycrest</div>
     <div class="pcard" id="card-paycrest">
-      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="tog-paycrest" onclick="toggleP('paycrest')"></div></div>
-      <div class="pcard-body" id="body-paycrest">
+      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog" id="tog-paycrest" onclick="toggleP('paycrest')"></div></div>
+      <div class="pcard-body off" id="body-paycrest">
         <div class="formula">Revenue = txns × MIN(avg_txn × share%, MAX_PER_TXN)<br>Cap kicks in above <strong id="pc-cap-note">—</strong></div>
         <div class="fields">
           <div class="field"><label>Rev Share (%)</label><input type="number" id="pc_share" value="7" step="0.5" oninput="recalc()"/></div>
@@ -352,125 +353,209 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="assm">
         <div class="assm-hero">
           <div class="assm-hero-eyebrow">Market Assumptions · April 2026</div>
-          <div class="assm-hero-title">Why We Believe the Numbers,<br>and Where We Stay Honest</div>
-          <div class="assm-hero-lead">This document frames the market context behind every figure in the forecast engine. We are building income verification infrastructure at the intersection of private credit, fintech, and blockchain — three of the fastest-moving spaces in global finance. The assumptions below are grounded in publicly available data, early commercial traction, and a clear-eyed view of what still needs to be proven.</div>
+          <div class="assm-hero-title">The Verification Layer<br>That Unlocks the Next Trillion</div>
+          <div class="assm-hero-lead">We verify business income privately off-chain and place cryptographic proof on-chain, converting e-commerce merchants, gig workers, and payment processors into real-world assets that the global private credit market can fund over blockchain rails. Before any asset can be tokenized it must first be verified, that verification step is the infrastructure gap we fill. Underwriters and lenders looking for profitable, real-economy RWA cannot move capital on-chain without it. We are the bridge between the operating world and the onchain credit market, and we are building it at exactly the right moment.</div>
         </div>
 
-        <!-- DROPLINKED -->
+        <!-- I. MACRO -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--purple)"></div>
+            <div class="assm-section-title">I. The Macro Thesis, Onchain Private Credit &amp; RWA</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-purple">Context</span> Where the World Is Going</div>
+            <div class="assm-card-body">
+              <p>The RWA tokenization market reached $24 billion in mid-2025 having grown 380% in three years. Standard Chartered projects <strong>$30 trillion by 2034</strong>. Over 200 active RWA projects are live with TVL hitting $65 billion in 2025. BlackRock, Fidelity, Apollo, and major banks are all launching tokenized credit products. Institutional capital is not asking whether to move onchain, it is asking what assets are worth funding when it gets there.</p>
+              <p>Private credit has emerged as the largest onchain RWA category. According to rwa.xyz, distributed onchain private credit stood at approximately <strong>$5 billion as of March 2026</strong>, against a traditional private credit market estimated at $3–3.5 trillion globally. The gap between those two numbers is the opportunity. The infrastructure closing that gap, verification, proof, underwriting rails, is what we are building.</p>
+            </div>
+            <div class="assm-stats">
+              <div class="assm-stat"><div class="assm-stat-val purple">$24B</div><div class="assm-stat-lbl">RWA market mid-2025 (+380% in 3yr)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val purple">$3–3.5T</div><div class="assm-stat-lbl">Traditional private credit globally</div></div>
+              <div class="assm-stat"><div class="assm-stat-val purple">$30T</div><div class="assm-stat-lbl">Standard Chartered RWA projection 2034</div></div>
+            </div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-purple">Our Position</span> Verification Before Tokenization</div>
+            <div class="assm-card-body">
+              <p>Any physical or income-generating asset, before it can be turned into a token and recognized as an RWA on-chain, must first be verified off-chain. This is not optional, it is the foundational step in the tokenization lifecycle. Without verified proof of the underlying asset, there is no collateral. Without collateral, there is no loan. Without a loan, there is no yield for the investor. The verification step is where the entire chain either holds or breaks.</p>
+              <p>The conversation in RWA has been dominated by Treasuries, real estate, and bonds, assets that already have well-understood legal structures and institutional custodians. The opportunity being missed is <strong>business income data</strong>: the Shopify store with $2M in GMV, the Uber driver with three years of consistent earnings, the Nigerian merchant clearing $50K a month through a crypto payment rail. These businesses generate real, recurring, verifiable income. They are real-world assets. They simply have no mechanism to prove it on-chain, until now.</p>
+              <p>Cr3dentials connects directly to the platforms where this income lives, Shopify, Uber, Stripe, PayPal, verifies it privately off-chain, and publishes cryptographic proof on-chain. That proof becomes the verification event that an underwriter needs before committing capital. We are not the lender. We are the infrastructure that makes lending possible for an entirely new asset class. Each deal processed through our partners is designed to begin with a verification event from us.</p>
+            </div>
+            <div class="assm-opportunity"><strong>Revenue logic:</strong> Every dollar of private credit that moves on-chain through our partners requires a verification event. Volume drives our revenue. The macro trend drives volume. As more lenders enter the onchain private credit market, demand for our verification infrastructure grows with them, not just through our current partners, but through every originator who needs to prove the asset before they can fund it.</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-purple">Competitive Angle</span> From One Lender to a Global Market</div>
+            <div class="assm-card-body">
+              <p>Today, merchants looking for growth capital largely deal with a closed system, one platform lender at a fixed rate, with terms set by the platform and no competition. The merchant has no leverage, no alternatives, and no way to shop their verified revenue to a wider pool of investors who might fund them at better terms.</p>
+              <p>Cr3dentials changes the structure of this market. By verifying a merchant's income off-chain and placing proof on-chain, we convert their operating data into an asset that any lender in the global private credit market can evaluate. Those looking to deploy capital into verified business credit now have access to a structured pipeline of opportunities they could not previously reach. The merchant gains access to a broader pool of potential lenders. Cr3dentials earns a fee on each verification event that enables that process.</p>
+              <p>We are starting with Shopify as our ICP entry point, it offers the scale and data accessibility to build a verified pipeline quickly. But the verification infrastructure works across any platform that holds business income data: inventory systems, payment processors, marketplace sales records. The addressable merchant universe grows every time we add a new data source, without rebuilding the infrastructure from scratch.</p>
+            </div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-purple">Regulatory Tailwind</span> The US Moment</div>
+            <div class="assm-card-body">
+              <p>The current US administration is actively positioning America as the global capital of crypto finance. The March 2025 SEC and CFTC joint guidance provided the first clear classification of digital assets in over a decade, removing the regulatory ambiguity that had held institutional capital on the sidelines. Capital that was waiting is now moving. For Cr3dentials, this is not a tailwind, it is a structural alignment. We are delivering verifiable, privacy-preserving business income data on-chain at the exact moment the regulatory framework is being built to receive it.</p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="assm-divider"/>
+
+        <!-- II. DROPLINKED -->
         <div class="assm-section">
           <div class="assm-section-head">
             <div class="assm-section-dot" style="background:var(--blue)"></div>
-            <div class="assm-section-title">Droplinked — US E-Commerce Private Credit</div>
+            <div class="assm-section-title">II. Droplinked, US E-Commerce Private Credit</div>
           </div>
           <div class="assm-card">
-            <div class="assm-card-title"><span class="badge b-blue">Market</span> The Opportunity</div>
+            <div class="assm-card-title"><span class="badge b-blue">Market</span> Capital That Wants Merchants to Win</div>
             <div class="assm-card-body">
-              <p>Global e-commerce sales are projected to surpass <strong>$7 trillion by 2027</strong>, with Shopify holding approximately <strong>$155.91 billion in market cap</strong> as of April 2026 and commanding roughly 1-in-3 US stores. The United States alone hosts over <strong>228,000 Shopify merchants</strong>, with significant concentration in California (50k), New York (20k), Florida (18k), and Texas (16k). Our entry point is merchants generating over $1M in GMV with at least 2 years of operating history — businesses with real revenue but limited access to traditional credit due to the nature of their income.</p>
-              <p>The private credit market globally is valued at over <strong>$1.7 trillion</strong> and is actively shifting toward blockchain infrastructure. Total onchain private credit has surged <strong>133% since 2023</strong>, moving from $25 million in early 2025 to an estimated <strong>$1.675 billion in active loan market capitalization</strong> as of March 2026. We are entering this market at the exact moment institutional appetite for off-chain data-backed lending is peaking.</p>
+              <p>Global e-commerce sales are projected to surpass <strong>$7 trillion by 2027</strong>. The merchants driving that growth, established operators with $1M+ in annual GMV and two or more years in business, are not short on revenue. What they lack is access to capital that understands their business model and is priced to support growth rather than extract from it. Traditional lenders either can't read platform-based income or price it as high risk because they can't verify it. The result is a large segment of creditworthy businesses either paying above-market rates or going without.</p>
+              <p>Our role is to bring those merchants to a more competitive market. We verify their income, from Shopify, but also from any platform that holds inventory, payment, or sales data, and place cryptographic proof on-chain. That proof is what allows institutional investors who <strong>want to back growing businesses</strong> to evaluate and fund them at rates the business can actually benefit from. We are not solving a denial problem. We are opening a competitive marketplace where capital chases qualified, verified merchants rather than the other way around.</p>
+              <p>We are starting with Shopify as our ICP entry point, over 228,000 US merchants with accessible data and verifiable income make it the fastest path to a qualified pipeline. From there, the same verification infrastructure extends to inventory systems, payment processors, and other marketplace platforms. The addressable merchant universe grows with every data source we add, without rebuilding the model each time.</p>
             </div>
             <div class="assm-stats">
               <div class="assm-stat"><div class="assm-stat-val blue">$7T+</div><div class="assm-stat-lbl">Global e-comm by 2027</div></div>
-              <div class="assm-stat"><div class="assm-stat-val blue">228K+</div><div class="assm-stat-lbl">US Shopify merchants</div></div>
-              <div class="assm-stat"><div class="assm-stat-val blue">$1.675B</div><div class="assm-stat-lbl">Onchain private credit (Mar 2026)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">228K+</div><div class="assm-stat-lbl">US Shopify merchants (entry ICP)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">1,000+</div><div class="assm-stat-lbl">ICP emails in active outreach</div></div>
             </div>
           </div>
           <div class="assm-card">
-            <div class="assm-card-title"><span class="badge b-blue">Founder Signal</span> Why Droplinked</div>
+            <div class="assm-card-title"><span class="badge b-blue">Funnel Rates</span> How Our Numbers Compare to Industry Standards</div>
             <div class="assm-card-body">
-              <p>Droplinked's founder has already demonstrated commercial conviction: the company crossed <strong>$2 million in referrals to capital financiers in Q4 2025</strong> — operating only in the UAE, only on the traditional lending side. They hold a <strong>$100M credit line in the MENA region</strong>, maintain a close relationship with PayPal MENA, and are actively expanding into the US market as their next growth vector. This is not a company pitching a concept. It is a company with proof of distribution, now entering a larger market.</p>
-              <p>Our partnership with Droplinked is further validated by parallel relationships being formed with <strong>Textile (Israel)</strong>, <strong>Tribeca Capital (New York)</strong>, and <strong>TradeVu (Nigeria)</strong> — confirming that demand for onchain income-verified private credit is a global, not regional, phenomenon.</p>
+              <p>Private credit and SME lending qualification rates are well documented. Large US banks approve only <strong>13.5% of SME loan applications</strong> on average. Non-bank lenders reach <strong>28.9%</strong>. The most common reasons businesses fail to qualify are weak cash flow (40% of rejections), limited operating history (23%), and poor financial documentation (19%).</p>
+              <p>Our funnel pre-screens for all three of these failure points before an application reaches the lender. We verify income directly from the merchant's platform, meaning every business that enters our pipeline already has documented, verifiable revenue in hand before a lender ever sees their file. This makes our <strong>7% qualify rate a deliberately conservative assumption</strong>, we are not sending unscreened cold lists. We are presenting pre-verified income data to backers who already want to deploy capital into growing businesses. Industry data suggests well-targeted verified lists qualify at 10–15%. We have modeled 7% to reflect the early-stage reality of building pipeline from scratch.</p>
+              <p>The <strong>7% close rate on qualified pipeline</strong> reflects natural friction even on well-matched deals, rate discussion, documentation, and the gap between interest and commitment. The <strong>5% bear case</strong> accounts for slower conversion before Droplinked's US origination rhythm is fully established. Both sit within the 5–15% close rate typical for private credit on qualified SME pipeline. The SME loan default rate dropped to <strong>4.7% in 2025</strong>, reinforcing that well-underwritten business credit carries less risk than its reputation implies.</p>
+            </div>
+            <div class="assm-stats">
+              <div class="assm-stat"><div class="assm-stat-val blue">13.5%</div><div class="assm-stat-lbl">Avg SME approval at large US banks</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">28.9%</div><div class="assm-stat-lbl">Non-bank lender SME approval rate</div></div>
+              <div class="assm-stat"><div class="assm-stat-val blue">4.7%</div><div class="assm-stat-lbl">SME loan default rate 2025</div></div>
+            </div>
+            <div class="assm-opportunity"><strong>Why Droplinked's founder validates our rates:</strong> He closed $2M in capital referrals in Q4 2025 in the UAE, leveraging a close working relationship with PayPal MENA for regional data access, but without the onchain verification infrastructure we now bring to the table. That result with traditional tooling in a single region is the baseline. Our 7% qualify assumption is backed by a founder who has already proven he can move private credit pipeline, and who now has a stronger verification layer to work with.</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-blue">Default Risk</span> How the Lending Structure Protects Investors</div>
+            <div class="assm-card-body">
+              <p>Droplinked is an onchain commerce platform, not a direct lender. Their role is origination and merchant relationships. The capital side is handled by their lending partners, who are structured and compliant with <strong>UCC Article 9 perfection</strong> for the US market.</p>
+              <p>UCC Article 9 is the US commercial law framework governing secured transactions. A lending partner that has filed a perfected security interest under Article 9 holds a legally recognized, first-priority lien on the merchant's assets, including inventory, accounts receivable, and business equipment. In the event of a default, that perfected lien gives the lender the right to initiate claim and liquidation proceedings through a structured legal process. This is what separates structured private credit from informal lending, and it is why UCC Article 9 compliance is a baseline expectation among institutional credit investors. The onchain proof we provide is the documentation layer that supports that enforcement, making the asset not just verified but legally actionable.</p>
             </div>
           </div>
           <div class="assm-card">
-            <div class="assm-card-title"><span class="badge b-blue">Macro Tailwind</span> The Onchain Moment</div>
+            <div class="assm-card-title"><span class="badge b-blue">Founder Signal</span> Why We Back This Partner</div>
             <div class="assm-card-body">
-              <p>The current US political environment is actively positioning America as the crypto capital of the world. For Cr3dentials, this creates a rare alignment: we are bringing verifiable, privacy-preserving business income data onchain at the moment regulators are building frameworks to support it. Senior tranches in onchain private credit currently offer <strong>8–10% annualized APY</strong> — attractive to institutional capital that is increasingly looking beyond over-collateralized crypto lending into real-world asset-backed yield.</p>
-              <p>Our approach — using off-chain income data to extend credit onchain — directly addresses the saturation in collateral-based DeFi lending and opens the door for global investors to participate in US small business financing.</p>
+              <p>Droplinked's founder crossed <strong>$2 million in referrals to capital financiers in Q4 2025</strong>, UAE only, through traditional lending channels. That result was achieved with the support of a close working relationship with PayPal MENA, which provided data access in the region, but without the onchain verification infrastructure we are now building together. They hold a <strong>$100M credit line in MENA</strong> and are entering the US as their primary next market. Droplinked is an onchain commerce platform that connects merchants to capital, not the capital itself. That distinction matters, because it means their growth is not constrained by a balance sheet. It is constrained by the size of the merchant network they can reach and verify, which is exactly where we come in.</p>
+              <p>Parallel validation: <strong>Textile (Israel)</strong>, <strong>Tribeca Capital (New York)</strong>, and <strong>TradeVu (Nigeria)</strong> are all forming relationships with us independently, confirming that demand for verified onchain private credit is converging globally, not just in one market.</p>
             </div>
-            <div class="assm-opportunity"><strong>Revenue impact:</strong> The avg loan size assumption of $150K (base) reflects conservative early-stage deal flow targeting established Shopify merchants. As proof of reserves matures and deal flow scales, this figure is expected to migrate toward $250K (bull scenario). The 0.05% revenue share on approved loan volume is deliberately conservative and reflects an introductory partnership rate.</div>
           </div>
-
-          <div class="assm-card" style="margin-top:12px">
-            <div class="assm-card-title">Scenario Assumptions — Droplinked</div>
+          <div class="assm-card">
+            <div class="assm-card-title">Scenario Assumptions, Droplinked</div>
             <table class="scenario-table">
-              <thead><tr><th>Scenario</th><th>Avg Loan Size</th><th>Approval Rate</th><th>Monthly Batches</th><th>Rationale</th></tr></thead>
+              <thead><tr><th>Scenario</th><th>Emails/Mo</th><th>Qualify</th><th>Close</th><th>Funded/Mo</th><th>Rationale</th></tr></thead>
               <tbody>
-                <tr class="bear-row"><td>Bear</td><td>$100K</td><td>15%</td><td>1</td><td>Early pipeline, tight credit conditions, small merchant segment only</td></tr>
-                <tr class="base-row"><td>Base</td><td>$150K</td><td>25%</td><td>1</td><td>Validated US deal flow, mid-market merchants, conservative approval threshold</td></tr>
-                <tr class="bull-row"><td>Bull</td><td>$250K</td><td>30%</td><td>2</td><td>US expansion fully operational, larger merchants onboarded, second batch per month</td></tr>
+                <tr class="bear-row"><td>Bear</td><td>1,000</td><td>5%</td><td>5%</td><td>~2–3</td><td>Same ICP list, slower conversion, pipeline friction before origination engine is fully operational</td></tr>
+                <tr class="base-row"><td>Base</td><td>1,000</td><td>7%</td><td>7%</td><td>~5</td><td>Pre-verified ICP outreach converting at conservative market rate, one funded loan per week</td></tr>
+                <tr class="bull-row"><td>Bull</td><td>10,000</td><td>12%</td><td>10%</td><td>~120</td><td>Scaled outreach at 10K emails, Droplinked US fully operational, institutional credit line deployed</td></tr>
               </tbody>
             </table>
+            <div class="assm-opportunity" style="margin-top:12px"><strong>On the $10M ceiling:</strong> The loan range extends to $10M as institutional relationships mature. Not modeled in the base case, genuine upside in years 3–5 as the track record builds and larger borrowers qualify.</div>
           </div>
         </div>
 
         <hr class="assm-divider"/>
 
-        <!-- KASI MONEY -->
+        <!-- III. KASI -->
         <div class="assm-section">
           <div class="assm-section-head">
             <div class="assm-section-dot" style="background:var(--accent)"></div>
-            <div class="assm-section-title">Kasi Money — South Africa Gig Economy</div>
+            <div class="assm-section-title">III. Kasi Money, South Africa Gig Economy</div>
           </div>
           <div class="assm-card">
-            <div class="assm-card-title"><span class="badge b-green">Market</span> The Underrated Opportunity</div>
+            <div class="assm-card-title"><span class="badge b-green">Market</span> The Underrated Bet</div>
             <div class="assm-card-body">
-              <p>South Africa's gig economy is valued at approximately <strong>$230 million in 2025</strong> and growing. Kasi Money's own trajectory tells the story clearly: they started 2025 with 55,000 drivers and closed the year with over <strong>100,000 drivers</strong> — nearly doubling in 12 months. Uber captures roughly 40% of the ride-hailing driver base in their user profile, giving us a <strong>target of ~40,000 drivers to start</strong> as we move out of the pilot phase into production-scale verification.</p>
-              <p>Kasi Money's plans to expand beyond Uber to additional localized platforms means our integration is not a single-platform bet — it is a foundational layer in their growth operations. Every new platform they onboard is additional verification volume for Cr3dentials.</p>
+              <p>South Africa's gig economy is valued at approximately <strong>$230 million in 2025</strong> and growing. But the more important number for our projection is the labor market context that is driving people into gig work in the first place. <strong>South Africa's official unemployment rate fell to 31.4% in Q4 2025</strong>, the lowest reading since Q3 2020 and the second consecutive quarterly decline, yet nearly 1 in 3 working-age South Africans still cannot find formal employment. The youth unemployment rate sits at <strong>43.8%</strong>. At those levels, gig platforms like Uber are not an alternative to formal work, they are the primary economic lifeline for millions of people.</p>
+              <p>This structural reality is what drives Kasi Money's growth and what makes our verification opportunity durable. Kasi Money grew from <strong>55,000 to 100,000+ drivers in a single year</strong>, nearly doubling without a significant product change. That growth mirrors the underlying labor market: more people entering gig work as the formal sector fails to absorb the available workforce. When unemployment peaked at 33.2% in Q2 2025 before declining, the informal and gig economy absorbed much of the difference. Our verification product sits directly on top of this dynamic.</p>
+              <p>Uber captures approximately 40% of the driver base in Kasi's user profile, giving us an initial addressable market of <strong>~40,000 drivers</strong>. Our base case targets reaching <strong>5,000 drivers per month</strong> in verifications, a 12.5% penetration rate of the accessible Uber driver pool. Given that Kasi Money doubled their driver base in 2025 and is expanding to additional localized platforms, the total market we are penetrating grows alongside them. If their 2025 growth rate repeats in any form, the driver pool we target expands materially without us needing to acquire a new partner.</p>
             </div>
             <div class="assm-stats">
-              <div class="assm-stat"><div class="assm-stat-val">$230M+</div><div class="assm-stat-lbl">SA gig economy 2025</div></div>
-              <div class="assm-stat"><div class="assm-stat-val">100K+</div><div class="assm-stat-lbl">Kasi drivers end of 2025</div></div>
-              <div class="assm-stat"><div class="assm-stat-val">~40K</div><div class="assm-stat-lbl">Initial Uber driver target</div></div>
+              <div class="assm-stat"><div class="assm-stat-val">31.4%</div><div class="assm-stat-lbl">SA unemployment Q4 2025 (5yr low)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val">100K+</div><div class="assm-stat-lbl">Kasi drivers end of 2025 (+82%)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val">43.8%</div><div class="assm-stat-lbl">SA youth unemployment rate Q4 2025</div></div>
             </div>
-            <div class="assm-opportunity"><strong>Revenue note:</strong> Current projections are intentionally conservative. We are exiting pilot with Kasi and entering production. The $600 monthly minimum reflects early-stage contractual protection. As verification volume scales past the 1,200/month breakeven, every additional verif at $0.50 is pure incremental margin. The upside here is underrepresented in the base model.</div>
+            <div class="assm-opportunity"><strong>Revenue floor and upside:</strong> The $600 monthly minimum provides contractual protection while volume builds. Breakeven is 1,200 verifications per month at $0.50. Base case of 5,000/mo = <strong>$2,500 MRR / $30K ARR</strong>. If Kasi's growth continues at anything close to 2025 rates, the total addressable driver pool grows and our 40% Uber penetration target scales with it, without requiring us to sign a single new partnership.</div>
           </div>
         </div>
 
         <hr class="assm-divider"/>
 
-        <!-- PAYCREST -->
+        <!-- IV. PAYCREST -->
         <div class="assm-section">
           <div class="assm-section-head">
             <div class="assm-section-dot" style="background:var(--orange)"></div>
-            <div class="assm-section-title">Paycrest — African Crypto On/Off Ramp</div>
+            <div class="assm-section-title">IV. Paycrest, African Crypto Payments</div>
           </div>
           <div class="assm-card">
-            <div class="assm-card-title"><span class="badge b-orange">Market</span> Payments at Scale</div>
+            <div class="assm-card-title"><span class="badge b-orange">Market</span> The Payments Layer</div>
             <div class="assm-card-body">
-              <p>The crypto on/off ramp market is projected to grow to <strong>$11.7 billion by 2033</strong>. Paycrest operates in Nigeria — crypto's number one market by transaction volume globally — and crossed <strong>$2 million in transaction volume in Q3–Q4 2025</strong>. The market validation extends further: Kotani Pay, another African payments partner we are onboarding, averages <strong>$15 million in transaction volume on a good month</strong>.</p>
-              <p>Our 7% revenue share with a $200 per-transaction cap means we are aligned with high-value transactions. At a $10,000 average transaction, we earn $200 per transaction — already at the cap — meaning our revenue is determined entirely by volume, not transaction size. The key variable is transaction count, which is why our bear scenario starts conservatively at 5 transactions per month.</p>
+              <p>The crypto on/off ramp market is projected to grow to <strong>$11.7 billion by 2033</strong>. Paycrest operates in Nigeria, the world's number one market by crypto transaction volume, and crossed <strong>$2 million in transaction volume in Q3–Q4 2025</strong>. Kotani Pay, our second Africa onboarding, peaks at <strong>$15 million in monthly transaction volume</strong>. These are not projections, they are operating numbers from live businesses in a market growing faster than most models capture.</p>
+              <p>Our structure is 7% revenue share per approved transaction, capped at $200. At a $10,000 average transaction, the floor of our target deal size, we earn $200 per transaction immediately at the cap. Revenue is entirely a volume function. The growth lever is bank integrations: each additional bank integration has the potential to open a new segment of transaction volume, with expansion patterns that may be non-linear rather than gradual.</p>
             </div>
             <div class="assm-stats">
               <div class="assm-stat"><div class="assm-stat-val orange">$11.7B</div><div class="assm-stat-lbl">On/off ramp market by 2033</div></div>
               <div class="assm-stat"><div class="assm-stat-val orange">$2M+</div><div class="assm-stat-lbl">Paycrest txn vol Q3–Q4 2025</div></div>
-              <div class="assm-stat"><div class="assm-stat-val orange">$15M</div><div class="assm-stat-lbl">Kotani Pay monthly (peak)</div></div>
+              <div class="assm-stat"><div class="assm-stat-val orange">$15M</div><div class="assm-stat-lbl">Kotani Pay monthly peak</div></div>
             </div>
-            <div class="assm-risk"><strong>Honest caveat:</strong> We remain grounded on Paycrest projections. This space is new and we are still identifying which banks Nigerian users transact with most for on/off ramp integration. Paycrest is actively doing BD and has connected LPs and OTC market makers in the region. We expect the bear scenario to be the most likely starting point, with meaningful upside as bank integrations complete.</div>
+            <div class="assm-risk"><strong>Honest assessment:</strong> The bear scenario is the most realistic near-term position. We are still mapping which banks Nigerian users transact with most frequently. Each integration that closes is a step-change in volume, the direction is clear, the timing is not yet fully in our control.</div>
           </div>
         </div>
 
         <hr class="assm-divider"/>
 
-        <!-- MACRO / CLOSING -->
+        <!-- V. COMPLIANCE & RISK -->
         <div class="assm-section">
           <div class="assm-section-head">
-            <div class="assm-section-dot" style="background:var(--purple)"></div>
-            <div class="assm-section-title">The Macro Case — Why Now</div>
+            <div class="assm-section-dot" style="background:var(--orange)"></div>
+            <div class="assm-section-title">V. Compliance, Licensing &amp; Operational Risk</div>
+          </div>
+          <div class="assm-card">
+            <div class="assm-card-title"><span class="badge b-orange">Risk</span> Where We Are and What We Need</div>
+            <div class="assm-card-body">
+              <p>We are transparent about where we stand on compliance. Cr3dentials is <strong>operationally aligned</strong> with the standards required to serve enterprise clients, our architecture and data handling practices are built to the specifications of ISO 27001, SOC 2, and GDPR. We are ready by the standards of those frameworks. What we do not yet hold are the formal certifications and local operating licenses required to close larger institutional deals.</p>
+              <p>Specifically, the path forward on compliance looks like this:</p>
+              <p><strong>ISO 27001</strong>, information security management certification. This is the minimum threshold required by most enterprise and institutional partners before they will share sensitive business data with a third-party verification provider. We are targeting this as our first certification milestone.</p>
+              <p><strong>SOC 2 Type II</strong>, service organization control audit covering security, availability, and confidentiality. Required by US-based financial institutions and enterprise SaaS buyers. This follows ISO 27001 in our roadmap.</p>
+              <p><strong>GDPR Compliance</strong>, governing the handling of European and increasingly global user data. Our data architecture is designed with GDPR principles built in. Formal documentation and DPA agreements are in progress.</p>
+              <p><strong>Local data processor licenses</strong>, operating in South Africa and Nigeria requires registration as a data processor under the Protection of Personal Information Act (POPIA) in South Africa and the Nigeria Data Protection Act (NDPA) in Nigeria. We are not yet licensed in either jurisdiction. These registrations are a prerequisite for scaling enterprise-level verification deals in each market and are being pursued in parallel with our commercial operations.</p>
+            </div>
+            <div class="assm-risk"><strong>Impact on revenue:</strong> The absence of formal certifications today creates an upper bound on the deal sizes and counterparty types we can currently access. Enterprise-grade financial institutions, regulated lenders, and large credit funds typically require ISO 27001 and SOC 2 as a prerequisite. Obtaining these certifications is expected to expand the counterparty types and deal sizes we can access across all three markets we currently operate in.</div>
+          </div>
+        </div>
+
+        <hr class="assm-divider"/>
+
+        <!-- VI. CLOSING -->
+        <div class="assm-section">
+          <div class="assm-section-head">
+            <div class="assm-section-dot" style="background:var(--accent)"></div>
+            <div class="assm-section-title">VI. Why Cr3dentials, Why Now</div>
           </div>
           <div class="assm-card">
             <div class="assm-card-body">
-              <p>Cr3dentials is not building a single product for a single market. We are building verification infrastructure that sits between traditional income data and onchain credit systems — a layer that does not yet exist at scale but is actively demanded by every partner we speak to.</p>
-              <p>The convergence happening right now — <strong>$1.7 trillion in private credit moving toward blockchain rails</strong>, Shopify merchants underserved by traditional lenders, African payment infrastructure maturing, and the US regulatory environment opening to crypto — creates a window that will not stay open indefinitely. We are positioned early, with real contracts, real traction, and a model that generates revenue from day one without requiring speculative upside to be worth the investment.</p>
-              <p>The numbers in this forecast engine represent a grounded view of what we can see. The numbers we cannot yet model — Textile, Tribeca, TradeVu, Kotani Pay at scale — represent the upside that will make the base case look conservative in retrospect.</p>
+              <p>The $3.5 trillion private credit market is moving to blockchain rails. Institutional capital is actively looking for real-economy RWA yield. The tooling to originate, verify, and fund business income on-chain is being assembled right now, and the verification step, the one that has to happen before any of the rest of it works, is what we have built.</p>
+              <p>We are not tokenizing Treasuries. We are not tokenizing real estate. We are converting the verified operating income of Shopify merchants, gig workers, and payment processors into a class of real-world asset that the global private credit market can potentially fund at more varied rates, expanding access to a market where capital options for platform-based businesses have historically been limited.</p>
+              <p>We have live contracts and active commercial operations. The compliance roadmap is clear, the deal pipeline is building, and the partners we have chosen, Droplinked with lending partners compliant under UCC Article 9, Kasi Money with 100K active drivers, Paycrest in the world's largest crypto-active market, are not bets on the future. They are operating businesses with proof of distribution. <strong>The numbers in this engine are what we can see. Textile, Tribeca Capital, TradeVu, and Kotani Pay at full scale are the upside that makes the base case look conservative.</strong></p>
             </div>
           </div>
-          <div class="assm-card" style="border-color:rgba(0,229,160,.25)">
-            <div class="assm-card-title">Key Risks to Monitor</div>
+          <div class="assm-card" style="border-color:rgba(0,229,160.2)">
+            <div class="assm-card-title">Key Risks Summary</div>
             <div class="assm-card-body">
-              <p><strong>Droplinked US expansion timeline</strong> — deal flow depends on successful US market entry and loan batch initiation. Delays push revenue rightward, not downward.</p>
-              <p><strong>Kasi verification ramp</strong> — production scale is near but not yet realized. The minimum fee provides a revenue floor while volume builds.</p>
-              <p><strong>Paycrest bank integrations</strong> — transaction volume is directly tied to the number of supported Nigerian banks. Each integration adds volume non-linearly.</p>
-              <p><strong>Regulatory environment</strong> — onchain private credit regulation is evolving globally. We view current momentum as favorable but monitor closely.</p>
+              <p><strong>Merchant outreach pipeline</strong>, US Shopify deal flow is being built now. First loan batches have not yet processed. Revenue from Droplinked builds as outreach converts.</p>
+              <p><strong>Default and asset recovery</strong>, addressed for the US market through Droplinked's lending partners operating under UCC Article 9 perfection. International markets require equivalent local legal structures as we expand.</p>
+              <p><strong>Kasi volume ramp</strong>, moving from pilot to production. The $600 floor protects near-term revenue while verification count builds past the breakeven threshold.</p>
+              <p><strong>Paycrest bank integrations</strong>, each integration is a step-change, not a linear lift. Timeline is uncertain; the direction is clear.</p>
+              <p><strong>Compliance &amp; licensing</strong>, ISO 27001, SOC 2, POPIA (South Africa), and NDPA (Nigeria) are the critical path items. Obtaining these unlocks institutional deal sizes currently out of reach.</p>
+              <p><strong>Regulatory evolution</strong>, onchain private credit regulation is being written globally in real time. We view the current US and African regulatory momentum as a structural tailwind.</p>
             </div>
           </div>
         </div>
@@ -538,22 +623,37 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
     <div class="assm-hero" style="margin-bottom:24px;padding-bottom:20px">
       <div class="assm-hero-eyebrow">April 2026</div>
-      <div style="font-size:20px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:10px">Why We Believe the Numbers</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7">Revenue assumptions grounded in market data, early traction, and a clear-eyed view of what still needs to be proven.</div>
+      <div style="font-size:20px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:10px">The Verification Layer That Unlocks the Next Trillion</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.75">We verify business income privately off-chain and place cryptographic proof on-chain, converting e-commerce merchants, gig workers, and payment processors into real-world assets the global private credit market can fund over blockchain rails. Before any asset can be tokenized, it must first be verified. That step is the infrastructure gap we fill.</div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--purple)"></div><div class="assm-section-title">The Macro Thesis</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>RWA tokenization hit $24B in mid-2025, up 380% in three years. Standard Chartered projects <strong>$30 trillion by 2034</strong>. Private credit is the largest onchain category at ~$5B distributed (March 2026), against a $3.5 trillion traditional market. The infrastructure gap: lenders can't fund business income on-chain because there is no verified proof of it. <strong>We build that proof.</strong></p>
+          <p>Today Shopify merchants have one lending option: Shopify Capital, at fixed rates, with no market competition. We verify their income on-chain and open them to the entire global private credit market, turning a closed system into a competitive one where rates are driven by real demand.</p>
+        </div>
+        <div class="assm-stats" style="grid-template-columns:1fr 1fr">
+          <div class="assm-stat"><div class="assm-stat-val purple">$24B</div><div class="assm-stat-lbl">RWA market mid-2025</div></div>
+          <div class="assm-stat"><div class="assm-stat-val purple">$30T</div><div class="assm-stat-lbl">Projected 2034</div></div>
+        </div>
+      </div>
     </div>
 
     <div class="assm-section">
       <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--blue)"></div><div class="assm-section-title">Droplinked · US Private Credit</div></div>
       <div class="assm-card">
         <div class="assm-card-body">
-          <p>Global e-commerce is heading past <strong>$7 trillion by 2027</strong>. There are 228,000+ Shopify merchants in the US alone — and roughly 1 in 3 US stores runs on Shopify. We are targeting merchants with $1M+ GMV who cannot access traditional bank credit despite verified revenue.</p>
-          <p>Droplinked's founder crossed <strong>$2M in capital referrals in Q4 2025</strong> operating only in the UAE. They hold a <strong>$100M credit line in MENA</strong> and are entering the US with us. Onchain private credit has surged 133% since 2023 and now sits at <strong>$1.675B in active loan market cap</strong>.</p>
+          <p>228K+ US Shopify merchants. $7T+ global e-commerce by 2027. Target: $1M+ GMV merchants locked out of traditional credit. We are actively in outreach now, pipeline building, first loan batches pending.</p>
+          <p>Droplinked crossed <strong>$2M in capital referrals Q4 2025</strong> (UAE only). They hold a <strong>$100M MENA credit line</strong> and are entering the US with us.</p>
+          <p><strong>Default protection:</strong> Droplinked is an onchain commerce platform. Their lending partners operate under <strong>UCC Article 9 perfection</strong>, a legally perfected first-priority lien that allows them to initiate claim and liquidation proceedings under applicable law. Our on-chain proof is the documentation that supports that enforcement.</p>
         </div>
         <div class="assm-stats" style="grid-template-columns:1fr 1fr">
-          <div class="assm-stat"><div class="assm-stat-val blue">$1.675B</div><div class="assm-stat-lbl">Onchain credit market</div></div>
           <div class="assm-stat"><div class="assm-stat-val blue">228K+</div><div class="assm-stat-lbl">US Shopify merchants</div></div>
+          <div class="assm-stat"><div class="assm-stat-val blue">$2M</div><div class="assm-stat-lbl">Q4 2025 capital referrals</div></div>
         </div>
-        <div class="assm-opportunity" style="margin-top:10px"><strong>Our loan avg:</strong> $150K base. Bear $100K, Bull $250K as proof of reserves matures.</div>
+        <div class="assm-opportunity" style="margin-top:10px"><strong>Scenarios:</strong> Bear $100K avg loan · Base $150K · Bull $250K. $10M ceiling is years 3–5 upside.</div>
       </div>
     </div>
 
@@ -561,8 +661,7 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--accent)"></div><div class="assm-section-title">Kasi Money · South Africa</div></div>
       <div class="assm-card">
         <div class="assm-card-body">
-          <p>South Africa's gig economy is worth <strong>$230M+ in 2025</strong>. Kasi Money grew from 55K to <strong>100K+ drivers in 2025</strong> — nearly doubling in one year. Our target starting base: <strong>~40K Uber drivers</strong>, growing as Kasi expands to more local platforms.</p>
-          <p>Projections are intentionally conservative — we're exiting pilot now. Every verif past 1,200/month at $0.50 is pure incremental margin above the $600 floor.</p>
+          <p>SA gig economy: <strong>$230M+ in 2025</strong>. Kasi grew 55K → 100K+ drivers in one year, organic pull. Target: <strong>~40K Uber drivers</strong>. Projections are conservative. Exiting pilot now. Breakeven: 1,200 verifs/month. Above that, every verif is pure margin.</p>
         </div>
       </div>
     </div>
@@ -571,19 +670,28 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--orange)"></div><div class="assm-section-title">Paycrest · Nigeria Payments</div></div>
       <div class="assm-card">
         <div class="assm-card-body">
-          <p>Crypto on/off ramp market grows to <strong>$11.7B by 2033</strong>. Paycrest crossed <strong>$2M in txn volume Q3–Q4 2025</strong>. Kotani Pay, our second Africa partner, peaks at <strong>$15M/month</strong>.</p>
-          <p>At $10K avg txn × 7% = $700, but capped at $200/txn. Revenue is purely a volume game. We start conservatively at 5–10 txns/month and expect non-linear growth as bank integrations complete.</p>
+          <p>On/off ramp market: <strong>$11.7B by 2033</strong>. Paycrest: <strong>$2M txn vol Q3–Q4 2025</strong>. Kotani Pay: <strong>$15M/month peak</strong>. Revenue = 7% per txn, capped at $200. At $10K avg we're at the cap immediately, pure volume game. Each bank integration is a step-change.</p>
         </div>
-        <div class="assm-risk" style="margin-top:10px"><strong>Honest take:</strong> Paycrest is most likely to land in the bear scenario near-term. The upside is real but the integrations need to close first.</div>
+        <div class="assm-risk" style="margin-top:10px"><strong>Honest take:</strong> Bear scenario most likely near-term. Upside is non-linear when bank integrations close.</div>
       </div>
     </div>
 
     <div class="assm-section">
-      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--purple)"></div><div class="assm-section-title">The Macro Case</div></div>
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--orange)"></div><div class="assm-section-title">Compliance &amp; Licensing Risk</div></div>
       <div class="assm-card">
         <div class="assm-card-body">
-          <p>Private credit is moving onchain. The US political environment is actively building crypto infrastructure. African payments infrastructure is maturing. We are the verification layer that makes all of it work — bringing off-chain income data to onchain credit systems at the exact moment the market needs it.</p>
-          <p>The numbers in this forecast engine are what we can see. <strong>Textile, Tribeca Capital, TradeVu, and Kotani Pay at scale</strong> are the upside that will make the base case look conservative in retrospect.</p>
+          <p>We are operationally aligned with <strong>ISO 27001</strong>, <strong>SOC 2</strong>, and <strong>GDPR</strong>. Not yet formally certified. We also require local data processor licenses under <strong>POPIA (South Africa)</strong> and <strong>NDPA (Nigeria)</strong>, both being pursued.</p>
+          <p>These certifications are the critical path to enterprise institutional deals. Obtaining them expands our addressable market and removes the primary ceiling on deal size in all three operating markets.</p>
+        </div>
+        <div class="assm-risk" style="margin-top:10px"><strong>Impact:</strong> No certifications today = upper bound on deal size. Closing them is a trackable milestone, not an open unknown.</div>
+      </div>
+    </div>
+
+    <div class="assm-section">
+      <div class="assm-section-head"><div class="assm-section-dot" style="background:var(--accent)"></div><div class="assm-section-title">Why Now</div></div>
+      <div class="assm-card">
+        <div class="assm-card-body">
+          <p>We are not tokenizing Treasuries. We are converting verified business income into RWA, opening Shopify merchant credit from a single lender to the entire global private credit ecosystem. Live contracts and active commercial operations. Clear compliance roadmap. <strong>Textile, Tribeca, TradeVu, and Kotani Pay at scale make the base case look conservative.</strong></p>
         </div>
       </div>
     </div>
@@ -613,10 +721,10 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="m-tog-kasi" onclick="toggleP('kasi')"></div></div>
       <div class="pcard-body" id="m-body-kasi">
         <div class="fields">
+          <div class="field"><label>Driver Market</label><input type="number" id="m-kasi_total_drivers" value="40000" oninput="mirrorKasi('total',this.value);recalc()"/></div>
+          <div class="field"><label>Drivers / Mo</label><input type="number" id="m-kasi_verifs" value="5000" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
           <div class="field"><label>Min Fee ($)</label><input type="number" id="m-kasi_fee" value="600" oninput="mirrorKasi('fee',this.value);recalc()"/></div>
           <div class="field"><label>Price/Verif ($)</label><input type="number" id="m-kasi_price" value="0.50" step="0.01" oninput="mirrorKasi('price',this.value);recalc()"/></div>
-          <div class="field"><label>Min Cap</label><input type="number" id="m-kasi_cap" value="250" oninput="mirrorKasi('cap',this.value);recalc()"/></div>
-          <div class="field"><label>Verifs/Mo Yr1</label><input type="number" id="m-kasi_verifs" value="400" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
         </div>
       </div>
     </div>
@@ -625,18 +733,17 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="pcard-head"><div class="pcard-name">Droplinked <span class="badge b-blue">Loan</span></div><div class="tog on" id="m-tog-droplinked" onclick="toggleP('droplinked')"></div></div>
       <div class="pcard-body" id="m-body-droplinked">
         <div class="fields">
-          <div class="field"><label>Avg Loan ($)</label><input type="number" id="m-dl_avgLoan" value="150000" oninput="mirrorDL('avgLoan',this.value);recalc()"/></div>
-          <div class="field"><label>Rev Share (%)</label><input type="number" id="m-dl_share" value="0.05" step="0.01" oninput="mirrorDL('share',this.value);recalc()"/></div>
-          <div class="field"><label>Loans/Batch</label><input type="number" id="m-dl_lpb" value="1000" oninput="mirrorDL('lpb',this.value);recalc()"/></div>
-          <div class="field"><label>Batches/Mo</label><input type="number" id="m-dl_batches" value="1" oninput="mirrorDL('batches',this.value);recalc()"/></div>
-          <div class="field" style="grid-column:1/-1"><label>Approval Rate (%)</label><div class="rw"><input type="range" id="m-dl_approval" min="10" max="60" value="25" oninput="syncApproval(this.value);recalc()"><span class="rval" id="m-dl_approvalVal">25%</span></div></div>
+          <div class="field"><label>Emails/Mo</label><input type="number" id="m-dl_emails" value="1000" oninput="mirrorDL('emails',this.value);recalc()"/></div>
+          <div class="field"><label>Avg Loan ($)</label><input type="number" id="m-dl_avgLoan" value="250000" oninput="mirrorDL('avgLoan',this.value);recalc()"/></div>
+          <div class="field"><label>Qualify Rate (%)</label><input type="number" id="m-dl_qualify" value="7" oninput="mirrorDL('qualify',this.value);recalc()"/></div>
+          <div class="field"><label>Close Rate (%)</label><input type="number" id="m-dl_close" value="7" oninput="mirrorDL('close',this.value);recalc()"/></div>
         </div>
       </div>
     </div>
     <div class="sec-label">Paycrest</div>
     <div class="pcard">
-      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog on" id="m-tog-paycrest" onclick="toggleP('paycrest')"></div></div>
-      <div class="pcard-body" id="m-body-paycrest">
+      <div class="pcard-head"><div class="pcard-name">Paycrest <span class="badge b-orange">Rev Share</span></div><div class="tog" id="m-tog-paycrest" onclick="toggleP('paycrest')"></div></div>
+      <div class="pcard-body off" id="m-body-paycrest">
         <div class="fields">
           <div class="field"><label>Rev Share (%)</label><input type="number" id="m-pc_share" value="7" step="0.5" oninput="mirrorPC('share',this.value);recalc()"/></div>
           <div class="field"><label>Max/Txn ($)</label><input type="number" id="m-pc_max" value="200" oninput="mirrorPC('max',this.value);recalc()"/></div>
@@ -663,14 +770,14 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
 <script>
 // ── STATE ────────────────────────────────────────────
-let on = { kasi:true, droplinked:true, paycrest:true };
+let on = { kasi:true, droplinked:true, paycrest:false };
 let customs = [];
 let chartYear = 1;
 
 const SC = {
-  base: { gr:40, approval:25, txns:10,  verifs:400, batches:1, avgLoan:150000 },
-  bull: { gr:80, approval:30, txns:25,  verifs:700, batches:2, avgLoan:250000 },
-  bear: { gr:10, approval:15, txns:5,   verifs:250, batches:1, avgLoan:100000 }
+  base: { gr:40, txns:10, emails:1000,  qualify:7,  close:7,  avgLoan:250000, kasiVerifs:5000, kasiTotal:40000 },
+  bull: { gr:80, txns:25, emails:10000, qualify:12, close:10, avgLoan:300000, kasiVerifs:1500, kasiTotal:100000 },
+  bear: { gr:10, txns:5,  emails:1000,  qualify:5,  close:5,  avgLoan:150000, kasiVerifs:400,  kasiTotal:40000 }
 };
 
 function $(id){ return document.getElementById(id); }
@@ -698,15 +805,12 @@ function syncGrowth(v){
   ['growthRate','m-growthRate'].forEach(id=>{const e=$(id);if(e)e.value=v;});
   ['growthVal','m-growthVal'].forEach(id=>{const e=$(id);if(e)e.textContent=v+'%';});
 }
-function syncApproval(v){
-  ['dl_approval','m-dl_approval'].forEach(id=>{const e=$(id);if(e)e.value=v;});
-  ['dl_approvalVal','m-dl_approvalVal'].forEach(id=>{const e=$(id);if(e)e.textContent=v+'%';});
-}
+function syncApproval(v){} // kept for backward compat, no longer used
 function syncHorizon(v){
   ['horizon','m-horizon'].forEach(id=>{const e=$(id);if(e)e.value=v;});
 }
-function mirrorKasi(k,v){ const m={fee:'kasi_fee',price:'kasi_price',cap:'kasi_cap',verifs:'kasi_verifs'}; const e=$(m[k]);if(e)e.value=v; }
-function mirrorDL(k,v){ const m={avgLoan:'dl_avgLoan',share:'dl_share',lpb:'dl_lpb',batches:'dl_batches'}; const e=$(m[k]);if(e)e.value=v; }
+function mirrorKasi(k,v){ const m={fee:'kasi_fee',price:'kasi_price',verifs:'kasi_verifs',total:'kasi_total_drivers'}; const e=$(m[k]);if(e)e.value=v; }
+function mirrorDL(k,v){ const m={emails:'dl_emails',qualify:'dl_qualify',close:'dl_close',avgLoan:'dl_avgLoan'}; const e=$(m[k]);if(e)e.value=v; }
 function mirrorPC(k,v){ const m={share:'pc_share',max:'pc_max',avg:'pc_avg',txns:'pc_txns'}; const e=$(m[k]);if(e)e.value=v; }
 
 // ── TOGGLE — fixed: only dims body, header stays interactive ────
@@ -720,8 +824,24 @@ function toggleP(id){
 }
 
 // ── MATH ─────────────────────────────────────────────
-function kasiMo(y){ if(!on.kasi)return 0; return Math.max(scale(num('kasi_verifs'),y)*num('kasi_price'),num('kasi_fee')); }
-function dlMo(y){ if(!on.droplinked)return 0; return scale(num('dl_batches'),y)*num('dl_lpb')*(num('dl_approval')/100)*num('dl_avgLoan')*(num('dl_share')/100); }
+// Kasi: drivers reached × $0.50/verif, floored at $600/mo
+function kasiMo(y){
+  if(!on.kasi)return 0;
+  const price=num('kasi_price'), fee=num('kasi_fee');
+  const verifs=scale(num('kasi_verifs'),y);
+  return Math.max(verifs*price, fee);
+}
+// Droplinked: emails × qualify% × close% = funded loans → × avg_loan × 0.05% = $125/loan
+function dlMo(y){
+  if(!on.droplinked)return 0;
+  const emails=scale(num('dl_emails'),y);
+  const qualify=num('dl_qualify')/100;
+  const close=num('dl_close')/100;
+  const avgLoan=num('dl_avgLoan');
+  const fee=num('dl_share')/100;
+  const fundedLoans=emails*qualify*close;
+  return fundedLoans*avgLoan*fee;
+}
 function pcMo(y){ if(!on.paycrest)return 0; return scale(num('pc_txns'),y)*Math.min(num('pc_avg')*num('pc_share')/100,num('pc_max')); }
 function customMo(cp,y){
   if(!cp.on)return 0; const g=gr();
@@ -741,11 +861,16 @@ function yearRev(y){
 function setScenario(s,el){
   document.querySelectorAll('.pill').forEach(p=>{ p.classList.toggle('active',p.textContent.trim()===el.textContent.trim()); });
   const sc=SC[s];
-  syncGrowth(sc.gr); syncApproval(sc.approval);
+  syncGrowth(sc.gr);
   ['pc_txns','m-pc_txns'].forEach(id=>{const e=$(id);if(e)e.value=sc.txns;});
-  ['kasi_verifs','m-kasi_verifs'].forEach(id=>{const e=$(id);if(e)e.value=sc.verifs;});
-  ['dl_batches','m-dl_batches'].forEach(id=>{const e=$(id);if(e)e.value=sc.batches;});
+  // Droplinked pipeline inputs
+  ['dl_emails','m-dl_emails'].forEach(id=>{const e=$(id);if(e)e.value=sc.emails;});
+  ['dl_qualify','m-dl_qualify'].forEach(id=>{const e=$(id);if(e)e.value=sc.qualify;});
+  ['dl_close','m-dl_close'].forEach(id=>{const e=$(id);if(e)e.value=sc.close;});
   ['dl_avgLoan','m-dl_avgLoan'].forEach(id=>{const e=$(id);if(e)e.value=sc.avgLoan;});
+  // Kasi driver inputs
+  ['kasi_verifs','m-kasi_verifs'].forEach(id=>{const e=$(id);if(e)e.value=sc.kasiVerifs;});
+  ['kasi_total_drivers','m-kasi_total_drivers'].forEach(id=>{const e=$(id);if(e)e.value=sc.kasiTotal;});
   recalc();
 }
 
@@ -764,8 +889,22 @@ function closeDrawer(){ $('drawer').classList.remove('open'); $('dbg').classList
 function recalc(){
   const h=horizon(); if(chartYear>h)chartYear=h;
 
+  // ── formula notes ──
   const fee=num('kasi_fee'),price=num('kasi_price');
-  const beEl=$('kasi-be');if(beEl)beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
+  const beEl=$('kasi-be'); if(beEl) beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
+  const kasiVerifs=num('kasi_verifs'), kasiTotal=num('kasi_total_drivers');
+  const kasiPct=kasiTotal>0?((kasiVerifs/kasiTotal)*100).toFixed(1)+'%':'—';
+  const kasiMRR=kasiMo(1), kasiARR=kasiMRR*12;
+  const mrrEl=$('kasi-mrr-note'); if(mrrEl) mrrEl.textContent=fmt(kasiMRR);
+  const arrEl=$('kasi-arr-note'); if(arrEl) arrEl.textContent=fmt(kasiARR);
+  const pctEl=$('kasi-pct'); if(pctEl) pctEl.textContent=kasiPct;
+  const totEl=$('kasi-total-display'); if(totEl) totEl.textContent=kasiTotal.toLocaleString();
+
+  const emails=num('dl_emails'), qualify=num('dl_qualify'), close=num('dl_close');
+  const fundedMo=Math.round(emails*(qualify/100)*(close/100));
+  const dlPipeEl=$('dl-pipeline-note');
+  if(dlPipeEl) dlPipeEl.textContent=`${emails.toLocaleString()} emails → ${Math.round(emails*qualify/100)} qualify → ${fundedMo} funded/mo`;
+
   const capEl=$('pc-cap-note');if(capEl){const ps=num('pc_share')/100,pm=num('pc_max');capEl.textContent=ps>0?'$'+Math.round(pm/ps).toLocaleString():'∞';}
 
   const years=[];
@@ -802,8 +941,18 @@ function recalc(){
   if(tbody){
     const atFloor=on.kasi&&kasiMo(1)<=num('kasi_fee')+0.01;
     let rows='';
-    if(on.kasi){const mo=kasiMo(1);rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('kasi_verifs')} verifs × $${num('kasi_price').toFixed(2)}</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;}
-    if(on.droplinked){const mo=dlMo(1);const appr=Math.round(num('dl_batches')*num('dl_lpb')*(num('dl_approval')/100));rows+=`<tr><td class="tn">Droplinked</td><td><span class="badge b-blue">Loan</span></td><td class="tb2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${appr} loans × ${fmt(num('dl_avgLoan'))} × ${num('dl_share')}%</td><td class="tm">—</td></tr>`;}
+    if(on.kasi){
+      const mo=kasiMo(1);
+      const vf=num('kasi_verifs'), tot=num('kasi_total_drivers');
+      const pct=tot>0?((vf/tot)*100).toFixed(1):'—';
+      rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${vf.toLocaleString()} drivers × $${num('kasi_price').toFixed(2)} · ${pct}% of ${tot.toLocaleString()} market</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;
+    }
+    if(on.droplinked){
+      const mo=dlMo(1);
+      const em=num('dl_emails'), ql=num('dl_qualify'), cl=num('dl_close');
+      const funded=Math.round(em*(ql/100)*(cl/100));
+      rows+=`<tr><td class="tn">Droplinked</td><td><span class="badge b-blue">Loan</span></td><td class="tb2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${em.toLocaleString()} emails → ${funded} funded loans × ${fmt(num('dl_avgLoan'))} × 0.05% = $125/loan</td><td class="tm">—</td></tr>`;
+    }
     if(on.paycrest){const mo=pcMo(1);const pt=Math.min(num('pc_avg')*num('pc_share')/100,num('pc_max'));const cap=(num('pc_avg')*num('pc_share')/100)>=num('pc_max');rows+=`<tr><td class="tn">Paycrest</td><td><span class="badge b-orange">Rev Share</span></td><td class="to2">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${num('pc_txns')} txns × $${pt.toFixed(2)}/txn${cap?' (cap)':''}</td><td class="${cap?'to2':'tm'}">${cap?'⚠ Cap':'✓ Under cap'}</td></tr>`;}
     customs.filter(c=>c.on).forEach(cp=>{const mo=customMo(cp,1);rows+=`<tr><td class="tn">${cp.name}</td><td><span class="badge b-green">Custom</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${cp.type.replace(/_/g,' ')}</td><td class="tm">—</td></tr>`;});
     tbody.innerHTML=rows;
