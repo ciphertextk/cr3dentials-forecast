@@ -1066,4 +1066,12 @@ function addCustom(){
 function removeCustom(id){ customs=customs.filter(c=>c.id!==id);recalc(); }
 function toggleCustom(id){ const cp=customs.find(c=>c.id===id);if(cp){cp.on=!cp.on;recalc();} }
 function renderCustomList(){
-  const el=$('custom-list');if(!el)retu
+  const el=$('custom-list');if(!el)return;
+  el.innerHTML=customs.map(cp=>`<div class="pcard"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div class="pcard-body ${cp.on?'':'off'}"><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div></div></div>`).join('');
+}
+
+window.addEventListener('resize',()=>{ drawChart('d-chart',chartYear,false); drawChart('m-chart',chartYear,true); });
+recalc();
+</script>
+</body>
+</html>
