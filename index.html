@@ -274,10 +274,10 @@ tr:hover td { background: rgba(255,255,255,.02); }
     <div class="pcard" id="card-kasi">
       <div class="pcard-head"><div class="pcard-name">Kasi Money <span class="badge b-green">API</span></div><div class="tog on" id="tog-kasi" onclick="toggleP('kasi')"></div></div>
       <div class="pcard-body" id="body-kasi">
-        <div class="formula">Revenue = MAX(drivers × $0.50, $600/mo)<br>Target MRR: <strong id="kasi-mrr-note">—</strong> · ARR: <strong id="kasi-arr-note">—</strong><br>Breakeven at <strong id="kasi-be">—</strong> drivers/mo</div>
+        <div class="formula">$600 flat for first 100 verifs/mo<br>+ $0.50 per verif above 100<br>MRR: <strong id="kasi-mrr-note">—</strong> · ARR: <strong id="kasi-arr-note">—</strong><br>Floor kicks in below <strong id="kasi-be">—</strong> verifs/mo</div>
         <div class="fields">
           <div class="field"><label>Driver Market</label><input type="number" id="kasi_total_drivers" value="40000" oninput="recalc()"/></div>
-          <div class="field"><label>Drivers / Mo</label><input type="number" id="kasi_verifs" value="5000" oninput="recalc()"/></div>
+          <div class="field"><label>Drivers / Mo</label><input type="number" id="kasi_verifs" value="750" oninput="recalc()"/></div>
           <div class="field"><label>Min Fee ($)</label><input type="number" id="kasi_fee" value="600" oninput="recalc()"/></div>
           <div class="field"><label>Price / Verif ($)</label><input type="number" id="kasi_price" value="0.50" step="0.01" oninput="recalc()"/></div>
         </div>
@@ -723,7 +723,7 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <div class="pcard-body" id="m-body-kasi">
         <div class="fields">
           <div class="field"><label>Driver Market</label><input type="number" id="m-kasi_total_drivers" value="40000" oninput="mirrorKasi('total',this.value);recalc()"/></div>
-          <div class="field"><label>Drivers / Mo</label><input type="number" id="m-kasi_verifs" value="5000" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
+          <div class="field"><label>Drivers / Mo</label><input type="number" id="m-kasi_verifs" value="750" oninput="mirrorKasi('verifs',this.value);recalc()"/></div>
           <div class="field"><label>Min Fee ($)</label><input type="number" id="m-kasi_fee" value="600" oninput="mirrorKasi('fee',this.value);recalc()"/></div>
           <div class="field"><label>Price/Verif ($)</label><input type="number" id="m-kasi_price" value="0.50" step="0.01" oninput="mirrorKasi('price',this.value);recalc()"/></div>
         </div>
@@ -776,9 +776,9 @@ let customs = [];
 let chartYear = 1;
 
 const SC = {
-  base: { gr:40, txns:10, emails:1000,  qualify:7,  close:7,  avgLoan:250000, kasiVerifs:5000, kasiTotal:40000 },
-  bull: { gr:80, txns:25, emails:10000, qualify:12, close:10, avgLoan:300000, kasiVerifs:1500, kasiTotal:100000 },
-  bear: { gr:10, txns:5,  emails:1000,  qualify:5,  close:5,  avgLoan:150000, kasiVerifs:400,  kasiTotal:40000 }
+  base: { gr:40, txns:10, emails:1000,  qualify:7,  close:7,  avgLoan:250000, kasiVerifs:750,  kasiTotal:40000 },
+  bull: { gr:80, txns:25, emails:10000, qualify:12, close:10, avgLoan:300000, kasiVerifs:5000, kasiTotal:100000 },
+  bear: { gr:10, txns:5,  emails:1000,  qualify:5,  close:5,  avgLoan:150000, kasiVerifs:100,  kasiTotal:40000 }
 };
 
 function $(id){ return document.getElementById(id); }
@@ -825,12 +825,15 @@ function toggleP(id){
 }
 
 // ── MATH ─────────────────────────────────────────────
-// Kasi: drivers reached × $0.50/verif, floored at $600/mo
+// Kasi: $600 flat covers first 100 verifs. Above 100, $0.50 per additional verif.
 function kasiMo(y){
   if(!on.kasi)return 0;
-  const price=num('kasi_price'), fee=num('kasi_fee');
   const verifs=scale(num('kasi_verifs'),y);
-  return Math.max(verifs*price, fee);
+  const price=num('kasi_price');
+  const fee=num('kasi_fee');
+  const floor=100; // verifs included in flat fee
+  if(verifs<=floor) return fee;
+  return fee+(verifs-floor)*price;
 }
 // Droplinked: emails × qualify% × close% = funded loans → × avg_loan × 0.05% = $125/loan
 function dlMo(y){
@@ -892,7 +895,7 @@ function recalc(){
 
   // ── formula notes ──
   const fee=num('kasi_fee'),price=num('kasi_price');
-  const beEl=$('kasi-be'); if(beEl) beEl.textContent=price>0?Math.ceil(fee/price).toLocaleString():'∞';
+  const beEl=$('kasi-be'); if(beEl) beEl.textContent='100';
   const kasiVerifs=num('kasi_verifs'), kasiTotal=num('kasi_total_drivers');
   const kasiPct=kasiTotal>0?((kasiVerifs/kasiTotal)*100).toFixed(1)+'%':'—';
   const kasiMRR=kasiMo(1), kasiARR=kasiMRR*12;
@@ -940,13 +943,14 @@ function recalc(){
 
   const tbody=$('d-tbody');
   if(tbody){
-    const atFloor=on.kasi&&kasiMo(1)<=num('kasi_fee')+0.01;
     let rows='';
     if(on.kasi){
       const mo=kasiMo(1);
       const vf=num('kasi_verifs'), tot=num('kasi_total_drivers');
       const pct=tot>0?((vf/tot)*100).toFixed(1):'—';
-      rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${vf.toLocaleString()} drivers × $${num('kasi_price').toFixed(2)} · ${pct}% of ${tot.toLocaleString()} market</td><td class="${atFloor?'to2':'tm'}">${atFloor?'⚠ At floor':'✓ Above floor'}</td></tr>`;
+      const above100=Math.max(0,vf-100);
+      const noteStr=vf<=100?`$600 flat (≤100 verifs)`:`$600 + ${above100} × $0.50`;
+      rows+=`<tr><td class="tn">Kasi Money</td><td><span class="badge b-green">API</span></td><td class="tg">${fmt(mo)}</td><td>${fmt(mo*12)}</td><td class="tnote">${noteStr} · ${pct}% of ${tot.toLocaleString()}</td><td class="${vf<=100?'tm':'tg'}">${vf<=100?'At floor':'Above floor'}</td></tr>`;
     }
     if(on.droplinked){
       const mo=dlMo(1);
@@ -1065,9 +1069,16 @@ function addCustom(){
 }
 function removeCustom(id){ customs=customs.filter(c=>c.id!==id);recalc(); }
 function toggleCustom(id){ const cp=customs.find(c=>c.id===id);if(cp){cp.on=!cp.on;recalc();} }
+function cpFormula(cp){
+  if(cp.type==='flat_verif') return `Revenue = MAX(${cp.verifs} verifs × $${cp.price}, $${cp.fee}/mo)`;
+  if(cp.type==='loan_share') return `Revenue = ${cp.batches} batch${cp.batches>1?'es':''} × ${cp.lpb} loans × ${cp.approval}% approval × avg_loan × ${cp.share}%`;
+  if(cp.type==='txn_share')  return `Revenue = txns × MIN(avg × ${cp.share}%, $${cp.maxPer}/txn)`;
+  if(cp.type==='fixed')      return `Revenue = $${cp.fee.toLocaleString()}/mo fixed`;
+  return cp.type.replace(/_/g,' ');
+}
 function renderCustomList(){
   const el=$('custom-list');if(!el)return;
-  el.innerHTML=customs.map(cp=>`<div class="pcard"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div class="pcard-body ${cp.on?'':'off'}"><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${cp.type.replace(/_/g,' ')}</div></div></div>`).join('');
+  el.innerHTML=customs.map(cp=>`<div class="pcard"><div class="pcard-head"><div class="pcard-name">${cp.name} <span class="badge b-green">Custom</span></div><div style="display:flex;gap:8px;align-items:center"><div class="tog ${cp.on?'on':''}" onclick="toggleCustom(${cp.id})"></div><button class="del-btn" onclick="removeCustom(${cp.id})">×</button></div></div><div class="pcard-body ${cp.on?'':'off'}"><div class="formula">${cpFormula(cp)}</div></div></div>`).join('');
 }
 
 window.addEventListener('resize',()=>{ drawChart('d-chart',chartYear,false); drawChart('m-chart',chartYear,true); });
